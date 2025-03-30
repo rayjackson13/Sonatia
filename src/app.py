@@ -1,5 +1,6 @@
 import sys
-from PySide6.QtWidgets import QApplication, QVBoxLayout
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget, QPushButton
+from PySide6.QtCore import Qt
 from qframelesswindow import FramelessWindow
 
 from constants.colors import Colors
@@ -7,6 +8,7 @@ from components.common.titlebar import CustomTitleBar
 from components.common.footer import Footer
 
 from utils.window import center_window
+from utils.fonts import load_fonts
 
 class CustomWindow(FramelessWindow):
     def __init__(self):
@@ -34,6 +36,7 @@ class CustomWindow(FramelessWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    load_fonts(app)
     window = CustomWindow()
     window.show()
     sys.exit(app.exec())

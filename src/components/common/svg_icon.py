@@ -8,13 +8,13 @@ from PySide6.QtCore import QRect, Qt
 from constants.common import PROJECT_ROOT
 
 class SvgIcon(QWidget):
-    def __init__(self, width, height):
+    def __init__(self, subpath: str, width: int, height: int):
         super().__init__()
-        icon_uri = path.join(PROJECT_ROOT, 'assets', 'svg', 'footer.svg')
+        icon_uri = self.get_uri(subpath)
         self.svg_renderer = QSvgRenderer(icon_uri)
         self.setFixedSize(width, height)
 
-    def paintEvent(self):
+    def paintEvent(self, event):
         painter = QPainter(self)
 
         # Get the available area (widget rectangle) and SVG's natural size
@@ -29,4 +29,8 @@ class SvgIcon(QWidget):
         if self.svg_renderer.isValid():
             self.svg_renderer.render(painter, target_rect)
         else:
-            painter.drawText(self.rect(), Qt.AlignCenter, "Invalid SVG file")
+            painter.drawText(self.rect(), Qt.AlignCenter, "?")
+            
+    def get_uri(self, subpath: str):
+        dirs = subpath.split('/')
+        return path.join(PROJECT_ROOT, *dirs)

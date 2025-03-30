@@ -11,7 +11,7 @@ class Footer(QWidget):
         layout = QVBoxLayout()
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(0)
-        layout.addWidget(SvgIcon(181, 16))
+        layout.addWidget(SvgIcon('assets/svg/footer.svg', 181, 16))
         layout.setAlignment(Qt.AlignCenter)
         self.setLayout(layout)
         
