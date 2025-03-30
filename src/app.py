@@ -4,6 +4,7 @@ from qframelesswindow import FramelessWindow
 
 from constants.colors import Colors
 from components.common.titlebar import CustomTitleBar
+from components.common.footer import Footer
 
 from utils.window import center_window
 
@@ -25,8 +26,10 @@ class CustomWindow(FramelessWindow):
         self.setContentsMargins(0, 0, 0, 0)
         
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)  # No margins
+        layout.setContentsMargins(0, 48, 0, 0)  # Add margins for titlebar
         layout.setSpacing(0)
+        layout.addStretch(1)
+        layout.addWidget(Footer())
         self.setLayout(layout)
 
 if __name__ == "__main__":
