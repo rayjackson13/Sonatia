@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
+
 class SettingsScreen(QWidget):
     def __init__(self, navigation):
         super().__init__()

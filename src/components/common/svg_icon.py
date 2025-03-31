@@ -7,6 +7,7 @@ from PySide6.QtCore import QRect, Qt
 
 from constants.common import PROJECT_ROOT
 
+
 class SvgIcon(QWidget):
     def __init__(self, subpath: str, width: int, height: int):
         super().__init__()
@@ -30,7 +31,7 @@ class SvgIcon(QWidget):
             self.svg_renderer.render(painter, target_rect)
         else:
             painter.drawText(self.rect(), Qt.AlignCenter, "?")
-            
+
     def get_uri(self, subpath: str):
-        dirs = subpath.split('/')
+        dirs = subpath.split("/")
         return path.join(PROJECT_ROOT, *dirs)

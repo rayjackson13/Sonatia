@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
-# Screen 1 as a separate class
+
 class HomeScreen(QWidget):
     def __init__(self, navigation):
         super().__init__()
@@ -15,4 +15,4 @@ class HomeScreen(QWidget):
         layout.addWidget(button)
 
     def open_settings(self):
-        self.navigation.navigate('settings')
+        self.navigation.navigate("settings")

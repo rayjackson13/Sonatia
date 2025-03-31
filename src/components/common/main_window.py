@@ -8,12 +8,13 @@ from navigation.index import Navigation
 
 from utils.window import center_window
 
+
 class MainWindow(FramelessWindow):
     def __init__(self):
         super().__init__()
         self.resize(1200, 900)  # Set window dimensions
         self.setMinimumWidth(1200)
-        
+
         center_window(self)
 
         # Remove the titlebar
@@ -26,7 +27,7 @@ class MainWindow(FramelessWindow):
         # Paint the entire window black
         self.setStyleSheet(f"background-color: {Colors.BG_PRIMARY};")
         self.setContentsMargins(0, 0, 0, 0)
-        
+
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 48, 0, 0)  # Add margins for titlebar
         layout.setSpacing(0)
