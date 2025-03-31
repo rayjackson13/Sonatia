@@ -30,6 +30,7 @@ class CustomTitleBar(TitleBar):
         self.handle_system_buttons()
 
         self.init_ui()
+        self.setStyleSheet("background-color: transparent;")
         self.update_state(self.navigation.get_state())
 
     def init_ui(self):

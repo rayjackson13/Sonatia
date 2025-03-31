@@ -29,9 +29,8 @@ class MainWindow(FramelessWindow):
         self.setContentsMargins(0, 0, 0, 0)
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 48, 0, 0)  # Add margins for titlebar
+        layout.setContentsMargins(0, 0, 0, 0)  # Add margins for titlebar
         layout.setSpacing(0)
-        layout.addWidget(self.navigation)
-        layout.addStretch(1)
+        layout.addWidget(self.navigation, stretch=1)
         layout.addWidget(Footer())
         self.setLayout(layout)

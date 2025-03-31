@@ -1,8 +1,8 @@
 import sys
 from PySide6.QtWidgets import QStackedWidget
 
-from screens.home import HomeScreen
-from screens.settings import SettingsScreen
+from screens.home.index import HomeScreen
+from screens.settings.index import SettingsScreen
 
 screen_titles = {"main": "Home", "settings": "Settings"}
 
