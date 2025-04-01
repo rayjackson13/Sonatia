@@ -25,6 +25,7 @@ box_style = f"""
     }}
 """
 
+
 class InsetShadowWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -57,6 +58,7 @@ class InsetShadowWidget(QWidget):
             painter.setPen(pen)
             painter.drawRoundedRect(rect, corner_radius, corner_radius)
 
+
 class RecentsSection(QWidget):
     def __init__(self):
         super().__init__()
@@ -64,11 +66,10 @@ class RecentsSection(QWidget):
         # self.setFixedHeight(460)
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(8,8,8,8)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         l_text = QLabel("Recents")
         l_text.setStyleSheet(text_style)
-
 
         box = InsetShadowWidget()
         box.setStyleSheet(box_style)
