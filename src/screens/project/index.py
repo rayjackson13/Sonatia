@@ -46,7 +46,7 @@ class ProjectScreen(QWidget):
 
     def get_project_title(self) -> str:
         project = self.store.get_file()
-        return project.name if project else "sf"
+        return project.name if project else ""
 
     def on_data_updated(self) -> None:
         """Update the UI when data changes in the ProjectStore."""

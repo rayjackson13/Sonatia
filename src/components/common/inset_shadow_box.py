@@ -1,12 +1,15 @@
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QSizePolicy
 from PySide6.QtGui import QPainter, QColor, QBrush, QPen
 from PySide6.QtCore import Qt
 
 from constants.colors import Colors
 
+
 class InsetShadowBox(QWidget):
     def __init__(self):
         super().__init__()
+        self.setMinimumHeight(0)
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
     def paintEvent(self, event):
         painter = QPainter(self)

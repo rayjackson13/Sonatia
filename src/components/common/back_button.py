@@ -30,7 +30,6 @@ class BackButton(QPushButton):
 
         layout = self.get_layout()
         self.setLayout(layout)
-        self.raise_()
 
     def get_layout(self):
         layout = QHBoxLayout()

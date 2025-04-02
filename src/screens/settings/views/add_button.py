@@ -1,12 +1,11 @@
-from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QLayout
+from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt, QEvent
 
 from components.common.svg_icon import SvgIcon
 from constants.colors import Colors
-from models.file import FileModel
 
 button_style = f"""
-    QPushButton#RecentsItem {{
+    QPushButton#AddButton {{
         border: 0;
         background-color: transparent;
         color: {Colors.FG_PRIMARY};
@@ -14,12 +13,12 @@ button_style = f"""
         height: 32px;
     }}
     
-    QPushButton#RecentsItem:hover {{
+    QPushButton#AddButton:hover {{
         background-color: {Colors.HOVER};
         color: {Colors.BG_SECONDARY};
     }}
     
-    QPushButton#RecentsItem:pressed {{
+    QPushButton#AddButton:pressed {{
         background-color: {Colors.SELECTED};
         color: {Colors.BG_SECONDARY};
     }}
@@ -34,7 +33,7 @@ def get_label_style(hover: bool):
     color = get_label_color(hover)
 
     return f"""
-        QLabel#RecentsItemLabel {{
+        QLabel#AddButtonLabel {{
             font-size: 16px;
             line-height: 24px;
             color: {color};
@@ -43,19 +42,11 @@ def get_label_style(hover: bool):
     """
 
 
-class RecentsItem(QPushButton):
-    def __init__(self, file: FileModel, parent=None):
+class AddButton(QPushButton):
+    def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.__file = file
-
-        self.setFixedHeight(32)
         self.init_ui()
-
-        self.installEventFilter(self)
-        self.setCursor(Qt.PointingHandCursor)
-        self.setObjectName('RecentsItem')
-        self.setStyleSheet(button_style)
 
     def init_ui(self):
         layout = QHBoxLayout()
@@ -63,21 +54,18 @@ class RecentsItem(QPushButton):
         layout.setSpacing(0)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
-        self.draw_icon(layout)
-        layout.addSpacing(12)
-        self.draw_text(layout)
-
-        self.setLayout(layout)
-
-    def draw_icon(self, layout: QLayout):
-        icon = SvgIcon("assets/svg/file.svg", 16, 16)
-        layout.addWidget(icon)
-
-    def draw_text(self, layout: QLayout):
-        self.label = QLabel(self.__file.name)
-        self.label.setObjectName('RecentsItemLabel')
+        icon = SvgIcon("assets/svg/plus.svg", 16, 16)
+        self.label = QLabel("Add")
+        self.label.setObjectName('AddButtonLabel')
         self.label.setStyleSheet(get_label_style(False))
+
+        layout.addWidget(icon)
+        layout.addSpacing(12)
         layout.addWidget(self.label)
+        self.setLayout(layout)
+        self.setObjectName("AddButton")
+        self.setStyleSheet(button_style)
+        self.setCursor(Qt.PointingHandCursor)
 
     def eventFilter(self, obj, event):
         is_hovered = event.type() == QEvent.Enter
