@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QFileDialog
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QFileDialog, QLayout
 
 from components.common.scroll_view import ScrollView
 from constants.colors import Colors
 from store.settings import SettingsStore
 
 from .add_button import AddButton
+from .list_item import FoldersListItem
 
 text_style = f"""
     QLabel#FoldersSectionTitle {{
@@ -27,44 +28,49 @@ class FoldersSection(QWidget):
         super().__init__()
         self.store = SettingsStore()
         self.store.data_updated.connect(self.on_data_updated)
-        self.init_ui()
+        self._layout = QVBoxLayout()
+        self.render_ui()
 
-    def clear_list(self):
-        while self.scrollview.scroll_layout.count():
-            item = self.scrollview.scroll_layout.takeAt(0)
+    def clear_layout(self, layout: QLayout):
+        while layout.count():
+            item = layout.takeAt(0)
             widget = item.widget()
             if widget:
                 widget.deleteLater()
 
-    def init_ui(self):
-        layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+    def clear_list(self):
+        self.clear_layout(self._layout)
+
+    def render_ui(self):
+        self.clear_list()
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setSpacing(0)
 
         l_text = QLabel("Project folders")
         l_text.setObjectName("FoldersSectionTitle")
         l_text.setStyleSheet(text_style)
 
         self.scrollview = ScrollView()
+        self.scrollview.setMaximumHeight(380)
         self.render_list()
 
-        layout.addWidget(l_text)
-        layout.addWidget(self.scrollview)
+        self._layout.addWidget(l_text)
+        self._layout.addWidget(self.scrollview)
 
-        self.setLayout(layout)
+        self.setLayout(self._layout)
         self.setMinimumHeight(0)
-        
-    
+
     def render_list(self):
         self.clear_list()
-        
-        data = self.get_folders()
-        for item in data:
-            self.scrollview.scroll_layout.addWidget(QLabel(item.path))
-        
+        self.scrollview.scroll_layout.setSpacing(4)
+
         add_btn = AddButton()
         add_btn.clicked.connect(self.on_add_pressed)
         self.scrollview.scroll_layout.addWidget(add_btn)
+        data = self.get_folders()
+        for item in data:
+            self.scrollview.scroll_layout.addWidget(FoldersListItem(item.path))
+
 
     def on_add_pressed(self):
         folder_dialog = QFileDialog()
@@ -77,9 +83,9 @@ class FoldersSection(QWidget):
 
     def add_folder(self, folder_path: str):
         self.store.add_folder(folder_path)
-        
+
     def get_folders(self):
         return self.store.get_folders()
-        
+
     def on_data_updated(self):
-        self.render_list()
+        self.render_ui()

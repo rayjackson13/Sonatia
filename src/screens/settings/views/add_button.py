@@ -55,7 +55,7 @@ class AddButton(QPushButton):
         layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
         icon = SvgIcon("assets/svg/plus.svg", 16, 16)
-        self.label = QLabel("Add")
+        self.label = QLabel("Add folder...")
         self.label.setObjectName('AddButtonLabel')
         self.label.setStyleSheet(get_label_style(False))
 
