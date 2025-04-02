@@ -10,10 +10,12 @@ from .back_button import BackButton
 BACK_BTN_WIDTH = 80
 
 titleBarButtonStyles = f"""
-    qproperty-normalColor: white;
-    qproperty-normalBackgroundColor: transparent;
-    qproperty-hoverColor: white;
-    qproperty-pressedColor: white;
+    TitleBarButton#CustomTitleBarBtn {{
+        qproperty-normalColor: white;
+        qproperty-normalBackgroundColor: transparent;
+        qproperty-hoverColor: white;
+        qproperty-pressedColor: white;
+    }}
 """
 
 
@@ -30,7 +32,8 @@ class CustomTitleBar(TitleBar):
         self.handle_system_buttons()
 
         self.init_ui()
-        self.setStyleSheet("background-color: transparent;")
+        self.setObjectName('CustomTitleBar')
+        self.setStyleSheet("TitleBar#CustomTitleBar { background-color: transparent; }")
         self.update_state(self.navigation.get_state())
 
     def init_ui(self):
@@ -59,7 +62,8 @@ class CustomTitleBar(TitleBar):
         title_font.setPixelSize(20)
         title_font.setWeight(QFont.Medium)
         self.title_label.setFont(title_font)
-        self.title_label.setStyleSheet(f"color: {Colors.WHITE}")
+        self.title_label.setObjectName('CustomTitleBarLabel')
+        self.title_label.setStyleSheet(f"QLabel#CustomTitleBarLabel {{ color: {Colors.WHITE}; }}")
         self.title_label.setAlignment(Qt.AlignCenter)
 
         self.back_button.clicked.connect(self.navigation.go_back)
@@ -85,6 +89,9 @@ class CustomTitleBar(TitleBar):
     def handle_system_buttons(self):
         """Customizes the style of title bar buttons"""
 
+        self.minBtn.setObjectName('CustomTitleBarBtn')
+        self.maxBtn.setObjectName('CustomTitleBarBtn')
+        self.closeBtn.setObjectName('CustomTitleBarBtn')
         self.minBtn.setStyleSheet(titleBarButtonStyles)
         self.maxBtn.setStyleSheet(titleBarButtonStyles)
         self.closeBtn.setStyleSheet(titleBarButtonStyles)

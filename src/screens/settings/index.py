@@ -10,6 +10,7 @@ class SettingsScreen(QWidget):
     def init_ui(self):
         layout = QVBoxLayout(self)
         button = QPushButton("Go Back")
-        button.setStyleSheet("color: white;")
+        button.setObjectName('SettingsScreenBack')
+        button.setStyleSheet("QPushButton#SettingsScreenBack { color: white; }")
         button.clicked.connect(self.navigation.go_back)
         layout.addWidget(button)

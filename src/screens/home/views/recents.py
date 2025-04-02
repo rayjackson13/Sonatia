@@ -1,11 +1,13 @@
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea
 from PySide6.QtGui import QPainter, QColor, QBrush, QPen
 from PySide6.QtCore import Qt
 
 from constants.colors import Colors
 
+from .recents_item import RecentsItem
+
 text_style = f"""
-    QLabel {{
+    QLabel#RecentsSectionTitle {{
         color: {Colors.FG_PRIMARY};
         font-family: Inter, sans-serif;
         font-size: 24px;
@@ -20,17 +22,23 @@ text_style = f"""
 """
 
 box_style = f"""
-    QWidget {{
+    QWidget#RecentsSectionBox {{
         border-radius: 8px;
+        background-color: transparent;
     }}
 """
+
+files: list[tuple[str, str, list[str]]] = [
+    ("В мыслях только ты", "", []),
+    ("Улетели", "", []),
+    ("Красивая", "", []),
+    ("Сломан", "", []),
+]
 
 
 class InsetShadowWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Black Inset Shadow on White Box")
-        self.setMinimumHeight(200)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -62,17 +70,50 @@ class InsetShadowWidget(QWidget):
 class RecentsSection(QWidget):
     def __init__(self):
         super().__init__()
-        # TODO: remove fixed height
-        # self.setFixedHeight(460)
 
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
+
         l_text = QLabel("Recents")
+        l_text.setObjectName('RecentsSectionTitle')
         l_text.setStyleSheet(text_style)
 
         box = InsetShadowWidget()
+        box.setObjectName('RecentsSectionBox')
         box.setStyleSheet(box_style)
+        self.init_box_contents(box)
+
         layout.addWidget(l_text)
         layout.addWidget(box, 1)
         self.setLayout(layout)
+
+    def init_box_contents(self, parent: QWidget):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.setAlignment(Qt.AlignTop)
+        
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setObjectName('RecentsSectionBoxScroll')
+        scroll_area.setStyleSheet('QWidget#RecentsSectionBoxScroll { background-color: transparent; }')
+
+        scroll_container = QWidget()
+        scroll_container.setObjectName('RecentsSectionBoxContainer')
+        scroll_container.setStyleSheet('QWidget#RecentsSectionBoxContainer { background-color: transparent; }')
+        scroll_layout = QVBoxLayout()
+        scroll_layout.setContentsMargins(8, 8, 8, 8)
+        scroll_layout.setSpacing(4)
+        scroll_layout.setAlignment(Qt.AlignTop)
+
+        for file_data in files:
+            item = RecentsItem(
+                name=file_data[0], file_path=file_data[1], tags=file_data[2]
+            )
+            scroll_layout.addWidget(item)
+            
+        scroll_container.setLayout(scroll_layout)
+        scroll_area.setWidget(scroll_container)
+        layout.addWidget(scroll_area)
+        parent.setLayout(layout)

@@ -11,13 +11,13 @@ icon_path_map = {
 }
 
 buttonStyle = f"""
-    QPushButton {{
+    QPushButton#ButtonWithIcon {{
         border: 0px;
     }}
 """
 
 labelStyle = f"""
-    QLabel {{
+    QLabel#ButtonWithIconLabel {{
         color: {Colors.FG_PRIMARY};
         background-color: transparent;
         font-size: 20px;
@@ -40,6 +40,7 @@ class ButtonWithIcon(QPushButton):
 
     def draw_ui(self):
         self.setFixedHeight(24)
+        self.setObjectName('ButtonWithIcon')
         self.setStyleSheet(buttonStyle)
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -53,6 +54,7 @@ class ButtonWithIcon(QPushButton):
 
     def init_label(self):
         label = QLabel(self.__title)
+        label.setObjectName('ButtonWithIconLabel')
         label.setStyleSheet(labelStyle)
         return label
 

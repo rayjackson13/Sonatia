@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QVBoxLayout, QStackedWidget
+from PySide6.QtWidgets import QVBoxLayout
 from qframelesswindow import FramelessWindow
 
 from constants.colors import Colors
@@ -23,9 +23,10 @@ class MainWindow(FramelessWindow):
 
         self.navigation = Navigation(self)
         self.setTitleBar(CustomTitleBar(self, self.navigation))
+        self.setObjectName('MainWindow')
 
         # Paint the entire window black
-        self.setStyleSheet(f"background-color: {Colors.BG_PRIMARY};")
+        self.setStyleSheet(f"QWidget#MainWindow {{ background-color: {Colors.BG_PRIMARY}; }}")
         self.setContentsMargins(0, 0, 0, 0)
 
         layout = QVBoxLayout()

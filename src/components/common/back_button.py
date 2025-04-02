@@ -14,16 +14,16 @@ class BackButton(QPushButton):
         super().__init__(parent)
 
         self.setMinimumSize(80, 32)
+        self.setObjectName('back_button')
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setStyleSheet(
-            f"""
-            QPushButton {{
+        self.setStyleSheet(f"""
+            QPushButton#back_button {{
                 background-color: transparent;
                 border: none;
                 border-radius: 4px;
             }}
-            QPushButton:hover {{ background-color: {Colors.HOVER}; }}
-            QPushButton:pressed {{ background-color: {Colors.SELECTED}; }}
+            QPushButton#back_button:hover {{ background-color: {Colors.HOVER}; }}
+            QPushButton#back_button:pressed {{ background-color: {Colors.SELECTED}; }}
         """
         )
         self.setCursor(Qt.PointingHandCursor)
@@ -37,7 +37,13 @@ class BackButton(QPushButton):
 
         icon = SvgIcon("assets/svg/back-arrow.svg", 11, 12)
         text = QLabel("Back")
-        text.setStyleSheet(f"background: transparent; color: {Colors.FG_PRIMARY};")
+        text.setObjectName('back_button_label')
+        text.setStyleSheet(f"""
+            QLabel#back_button_label {{
+                background: transparent;
+                color: {Colors.FG_PRIMARY};
+            }}
+        """)
 
         layout.addWidget(icon)
         layout.addSpacing(4)
