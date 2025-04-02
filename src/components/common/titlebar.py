@@ -117,6 +117,5 @@ class CustomTitleBar(TitleBar):
             del item
         
     def on_data_updated(self, title: str, can_go_back: bool):
-        print('data updated', title, can_go_back)
         self.title_label.setText(title)
         self.toggle_back_button(can_go_back)

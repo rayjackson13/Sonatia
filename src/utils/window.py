@@ -5,7 +5,7 @@ def center_window(window):
     # Get the screen geometry
     screen = QApplication.screenAt(QCursor.pos())
 
-    if (screen):
+    if screen:
         screen_geometry = screen.geometry()
 
         # Calculate center position

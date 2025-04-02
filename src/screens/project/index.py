@@ -31,7 +31,6 @@ class ProjectScreen(QWidget):
         title_text = self.get_project_title()
         nav_store = NavigationStore.get_instance()
         nav_store.set_title(title_text)
-        print("title", title_text)
         self.layout.setAlignment(Qt.AlignCenter)
         label = QLabel(title_text)
         label.setObjectName("ProjectScreenTitle")

@@ -59,7 +59,6 @@ class FoldersSection(QWidget):
         self.clear_list()
         
         data = self.get_folders()
-        print('data', data)
         for item in data:
             self.scrollview.scroll_layout.addWidget(QLabel(item.path))
         
