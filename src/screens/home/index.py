@@ -40,9 +40,9 @@ class HomeScreen(QWidget):
         c_layout.addWidget(RecentsSection(open_project=self.open_project_screen))
         c_layout.addSpacing(48)
         c_layout.addWidget(add_button)
-        c_layout.addSpacing(16)
+        c_layout.addSpacing(12)
         c_layout.addWidget(open_button)
-        c_layout.addSpacing(16)
+        c_layout.addSpacing(12)
         c_layout.addWidget(settings_button)
 
         container.setLayout(c_layout)

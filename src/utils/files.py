@@ -14,7 +14,7 @@ def get_file_paths() -> list[str]:
 
         all_paths.extend(
             [
-                file
+                str(file)
                 for file in folder.rglob("*.als")
                 if "Backup" not in file.parts and not file.name.startswith(".")
             ]
@@ -36,25 +36,13 @@ def get_file_data(file_path: str) -> FileModel | None:
     return FileModel(file_id=None, path=file_path, name=name, updated_at=updated_at)
 
 
-def get_files_in_folder(folder_path: str) -> list[FileModel]:
-    file_paths = get_file_paths(folder_path)
-    files: list[FileModel] = []
-    for path in file_paths:
-        files.append(get_file_data(path))
-
-    for file in files:
-        print(file)
-
-    return files
-
-
 def index_files() -> list[FileModel]:
     file_paths = get_file_paths()
     files: list[FileModel] = []
     for path in file_paths:
         files.append(get_file_data(path))
 
-    for file in files:
-        print(file)
+    controller = FileDBController()
+    controller.insert_files(files)
 
-    return files
+    return controller.get_all_files()

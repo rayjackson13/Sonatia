@@ -20,8 +20,8 @@ labelStyle = f"""
     QLabel#ButtonWithIconLabel {{
         color: {Colors.FG_PRIMARY};
         background-color: transparent;
-        font-size: 20px;
-        line-height: 24px;
+        font-size: 16px;
+        line-height: 20px;
     }}
 """
 
@@ -39,7 +39,7 @@ class ButtonWithIcon(QPushButton):
         self.draw_fx()
 
     def draw_ui(self):
-        self.setFixedHeight(24)
+        self.setFixedHeight(20)
         self.setObjectName('ButtonWithIcon')
         self.setStyleSheet(buttonStyle)
         layout = QHBoxLayout()

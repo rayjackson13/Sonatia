@@ -4,6 +4,8 @@ from PySide6.QtCore import Qt
 from qframelesswindow import TitleBar
 
 from constants.colors import Colors
+from store.navigation import NavigationStore
+
 from .logo import Logo
 from .back_button import BackButton
 
@@ -26,15 +28,16 @@ class CustomTitleBar(TitleBar):
         super().__init__(parent)
 
         self.navigation = navigation
-        self.navigation.register_listener(self)
-        self.title = ""
+        self.store = NavigationStore.get_instance()
+        self.store.data_updated.connect(self.on_data_updated)
+        self.title = self.store.get_title()
         self.back_button = BackButton()
         self.handle_system_buttons()
 
         self.init_ui()
         self.setObjectName('CustomTitleBar')
         self.setStyleSheet("TitleBar#CustomTitleBar { background-color: transparent; }")
-        self.update_state(self.navigation.get_state())
+        self.toggle_back_button(False)
 
     def init_ui(self):
         layout = self.layout()
@@ -112,9 +115,8 @@ class CustomTitleBar(TitleBar):
             item.spacerItem().invalidate()
             layout.removeItem(item)
             del item
-
-    def update_state(self, state: tuple[str, str, int]):
-        screen_title = state[1]
-        stack_size = state[2]
-        self.toggle_back_button(stack_size > 1)
-        self.title_label.setText(screen_title)
+        
+    def on_data_updated(self, title: str, can_go_back: bool):
+        print('data updated', title, can_go_back)
+        self.title_label.setText(title)
+        self.toggle_back_button(can_go_back)

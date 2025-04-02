@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLayout
 from PySide6.QtCore import Qt
 
 from models.file import FileModel
+from store.navigation import NavigationStore
 from store.project import ProjectStore
 
 
@@ -28,6 +29,8 @@ class ProjectScreen(QWidget):
         self.clear_layout(self.layout)
 
         title_text = self.get_project_title()
+        nav_store = NavigationStore.get_instance()
+        nav_store.set_title(title_text)
         print("title", title_text)
         self.layout.setAlignment(Qt.AlignCenter)
         label = QLabel(title_text)

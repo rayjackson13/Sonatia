@@ -24,7 +24,7 @@ class InsetShadowBox(QWidget):
         painter.setBrush(Qt.NoBrush)
 
         for i in range(shadow_radius):
-            alpha = int(63 * (1 - i / shadow_radius))  # Gradual transparency
+            alpha = int(47 * (1 - i / shadow_radius))  # Gradual transparency
             rect = box_rect.adjusted(i, i, -i, -i)
             corner_radius = 8 * (rect.width() / box_rect.width())
             shadow_color.setAlpha(alpha)  # Set transparency for shadow

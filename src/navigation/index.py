@@ -4,8 +4,9 @@ from PySide6.QtWidgets import QStackedWidget
 from screens.home.index import HomeScreen
 from screens.settings.index import SettingsScreen
 from screens.project.index import ProjectScreen
+from store.navigation import NavigationStore
 
-screen_titles = {"main": "Home", "settings": "Settings", "project": "Project"}
+screen_titles = {"main": "Home", "settings": "Settings"}
 
 
 class Navigation(QStackedWidget):
@@ -15,6 +16,7 @@ class Navigation(QStackedWidget):
         self.__history: list[str] = []
         self.__listeners = []
         self.__screen_map = {}
+        self.__store = NavigationStore.get_instance()
 
         self.register_screen("main", HomeScreen(self))
         self.register_screen("settings", SettingsScreen(self))
@@ -33,8 +35,8 @@ class Navigation(QStackedWidget):
     def navigate(self, uri: str):
         if uri in self.__screen_map:
             self.__history.insert(0, uri)
+            self.__store.set_data(self.get_title_by_uri(uri), len(self.__history) > 1)
             self.setCurrentWidget(self.__screen_map[uri])
-            self.notify_listeners()
         else:
             print(f'The stack has no screen with uri: "{uri}".', file=sys.stderr)
 
@@ -43,20 +45,11 @@ class Navigation(QStackedWidget):
             self.__history.pop(0)
             prev_uri = self.__history[0]
             prev_widget = self.__screen_map[prev_uri]
+            self.__store.set_data(self.get_title_by_uri(prev_uri), len(self.__history) > 1)
             self.setCurrentWidget(prev_widget)
-            self.notify_listeners()
         except:
             print(f"The stack is empty.", file=sys.stderr)
 
-    def get_state(self):
-        uri = self.__history[0]
-        title = screen_titles[uri] if uri in screen_titles else ""
-        size = len(self.__history)
-        return (uri, title, size)
-
-    def register_listener(self, listener):
-        self.__listeners.append(listener)
-
-    def notify_listeners(self):
-        for listener in self.__listeners:
-            listener.update_state(self.get_state())
+    def get_title_by_uri(self, uri: str):
+        cur_title = self.__store.get_title()
+        return screen_titles[uri] if uri in screen_titles else cur_title
