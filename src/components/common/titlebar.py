@@ -27,7 +27,7 @@ class CustomTitleBar(TitleBar):
 
         self.navigation = navigation
         self.navigation.register_listener(self)
-        self.title = "hey"
+        self.title = ""
         self.back_button = BackButton()
         self.handle_system_buttons()
 

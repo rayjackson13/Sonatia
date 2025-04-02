@@ -3,19 +3,22 @@ from PySide6.QtWidgets import QStackedWidget
 
 from screens.home.index import HomeScreen
 from screens.settings.index import SettingsScreen
+from screens.project.index import ProjectScreen
 
-screen_titles = {"main": "Home", "settings": "Settings"}
+screen_titles = {"main": "Home", "settings": "Settings", "project": "Project"}
 
 
 class Navigation(QStackedWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.__history: list[str] = []
         self.__listeners = []
         self.__screen_map = {}
 
         self.register_screen("main", HomeScreen(self))
         self.register_screen("settings", SettingsScreen(self))
+        self.register_screen("project", ProjectScreen(self))
 
         self.navigate("main")
 

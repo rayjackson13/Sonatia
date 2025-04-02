@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt, QEvent
 
 from components.common.svg_icon import SvgIcon
 from constants.colors import Colors
+from models.file import FileModel
 
 button_style = f"""
     QPushButton#RecentsItem {{
@@ -38,12 +39,10 @@ def get_label_style(hover: bool):
 
 
 class RecentsItem(QPushButton):
-    def __init__(self, name: str, file_path: str, tags: list[str], parent=None):
+    def __init__(self, file: FileModel, parent=None):
         super().__init__(parent)
 
-        self.__name = name
-        self.__file_path = file_path
-        self.__tags = tags
+        self.__file = file
 
         self.setFixedHeight(32)
         self.init_ui()
@@ -70,7 +69,7 @@ class RecentsItem(QPushButton):
         layout.addWidget(icon)
 
     def draw_text(self, layout: QLayout):
-        self.label = QLabel(self.__name)
+        self.label = QLabel(self.__file.name)
         self.label.setObjectName('RecentsItemLabel')
         self.label.setStyleSheet(get_label_style(False))
         layout.addWidget(self.label)

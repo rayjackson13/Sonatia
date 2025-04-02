@@ -1,8 +1,13 @@
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea
-from PySide6.QtGui import QPainter, QColor, QBrush, QPen
+from typing import Callable
+from functools import partial
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea
 
+from components.common.inset_shadow_box import InsetShadowBox
 from constants.colors import Colors
+from models.file import FileModel
+from store.project import ProjectStore
+from utils.files import index_files
 
 from .recents_item import RecentsItem
 
@@ -36,40 +41,12 @@ files: list[tuple[str, str, list[str]]] = [
 ]
 
 
-class InsetShadowWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        # Draw the white box
-        box_rect = self.rect()  # Padding around the box
-        painter.setBrush(QBrush(QColor(Colors.BG_SECONDARY)))  # White box
-        painter.setPen(Qt.NoPen)
-        painter.drawRoundedRect(box_rect, 8, 8)
-
-        # Draw the black inset shadow
-        shadow_color = QColor(0, 0, 0)  # Black color for shadow
-        shadow_radius = 8  # Shadow radius (blur depth)
-        painter.setBrush(Qt.NoBrush)
-
-        for i in range(shadow_radius):
-            alpha = int(63 * (1 - i / shadow_radius))  # Gradual transparency
-            rect = box_rect.adjusted(i, i, -i, -i)
-            corner_radius = 8 * (rect.width() / box_rect.width())
-            shadow_color.setAlpha(alpha)  # Set transparency for shadow
-            painter.setBrush(Qt.NoBrush)
-            pen = QPen(QColor(shadow_color))
-            pen.setWidth(1)
-            painter.setPen(pen)
-            painter.drawRoundedRect(rect, corner_radius, corner_radius)
-
-
 class RecentsSection(QWidget):
-    def __init__(self):
+    def __init__(self, open_project: Callable[[FileModel], None]):
         super().__init__()
+        
+        self.__open_project = open_project
+        self.__files = index_files()
 
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -79,7 +56,7 @@ class RecentsSection(QWidget):
         l_text.setObjectName('RecentsSectionTitle')
         l_text.setStyleSheet(text_style)
 
-        box = InsetShadowWidget()
+        box = InsetShadowBox()
         box.setObjectName('RecentsSectionBox')
         box.setStyleSheet(box_style)
         self.init_box_contents(box)
@@ -107,13 +84,19 @@ class RecentsSection(QWidget):
         scroll_layout.setSpacing(4)
         scroll_layout.setAlignment(Qt.AlignTop)
 
-        for file_data in files:
-            item = RecentsItem(
-                name=file_data[0], file_path=file_data[1], tags=file_data[2]
-            )
+        files = sorted(self.__files, key=lambda x: x.updated_at, reverse=True)
+        for file in files:
+            item = RecentsItem(file)
+            item.clicked.connect(partial(self.on_project_clicked, file))
             scroll_layout.addWidget(item)
             
         scroll_container.setLayout(scroll_layout)
         scroll_area.setWidget(scroll_container)
         layout.addWidget(scroll_area)
         parent.setLayout(layout)
+        
+    def on_project_clicked(self, file: FileModel):
+        store = ProjectStore.get_instance()
+        store.set_file(file)
+        self.__open_project()
+        
