@@ -44,6 +44,6 @@ def index_files() -> list[ProjectModel]:
         projects.extend(get_files_in_folder(folder))
 
     controller = ProjectDBController()
-    controller.insert_projects(projects)
+    controller.insert_records(projects)
 
-    return controller.get_all_projects()
+    return controller.fetch_all()

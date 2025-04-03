@@ -2,7 +2,8 @@ from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QFileDialog, QLayout
 
 from components.common.scroll_view import ScrollView
 from constants.colors import Colors
-from store.settings import SettingsStore
+from db.manager import DatabaseManager
+from db.folders import FolderModel
 
 from .add_button import AddButton
 from .list_item import FoldersListItem
@@ -26,8 +27,8 @@ text_style = f"""
 class FoldersSection(QWidget):
     def __init__(self):
         super().__init__()
-        self.store = SettingsStore()
-        self.store.data_updated.connect(self.on_data_updated)
+        self._db_controller = DatabaseManager.get_controller("folders")
+        self.subscribe_to_db_updates()
         self._layout = QVBoxLayout()
         self.render_ui()
 
@@ -71,7 +72,6 @@ class FoldersSection(QWidget):
         for item in data:
             self.scrollview.scroll_layout.addWidget(FoldersListItem(item))
 
-
     def on_add_pressed(self):
         folder_dialog = QFileDialog()
         folder_dialog.setFileMode(QFileDialog.Directory)
@@ -82,10 +82,10 @@ class FoldersSection(QWidget):
             self.add_folder(selected_folder)
 
     def add_folder(self, folder_path: str):
-        self.store.add_folder(folder_path)
+        self._db_controller.insert_records([FolderModel(path=folder_path)])
 
     def get_folders(self):
-        return self.store.get_folders()
+        return self._db_controller.fetch_all()
 
-    def on_data_updated(self):
-        self.render_ui()
+    def subscribe_to_db_updates(self):
+        self._db_controller.data_updated.connect(self.render_ui)

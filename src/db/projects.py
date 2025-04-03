@@ -1,15 +1,21 @@
 import sqlite3
 import os
 from datetime import datetime
+from PySide6.QtCore import QObject, Signal
 
 from models.project import ProjectModel
+
+from .controller import AbstractDBController
 
 DB_PATH = "db/projects.db"
 
 
-class ProjectDBController:
+class ProjectDBController(AbstractDBController[ProjectModel]):
+    data_updated = Signal()
+    
     def __init__(self):
         """Initialize the database connection and cursor."""
+        super().__init__()
         try:
             os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
             self.connection = sqlite3.connect(DB_PATH)
@@ -38,7 +44,7 @@ class ProjectDBController:
         except sqlite3.Error as e:
             print(f"Error creating table: {e}")
 
-    def insert_projects(self, projects: list[ProjectModel]):
+    def insert_records(self, projects: list[ProjectModel]):
         """Insert a project into the database."""
         try:
             sql = """
@@ -56,10 +62,11 @@ class ProjectDBController:
             ]
             self.cursor.executemany(sql, data)
             self.connection.commit()
+            self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error inserting project: {e}")
 
-    def get_all_projects(self) -> list[ProjectModel]:
+    def fetch_all(self) -> list[ProjectModel]:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
             sql = """
@@ -83,7 +90,7 @@ class ProjectDBController:
             print(f"Error fetching projects: {e}")
             return []
 
-    def get_project_by_id(self, id: int) -> ProjectModel:
+    def fetch_by_id(self, id: int) -> ProjectModel:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
             sql = """
@@ -105,7 +112,7 @@ class ProjectDBController:
             print(f"Error fetching projects: {e}")
             return []
 
-    def update_project(self, file: ProjectModel):
+    def update_record(self, file: ProjectModel):
         """Update project's information."""
         try:
             sql = """
@@ -117,15 +124,17 @@ class ProjectDBController:
                 sql, (file.name, file.path, file.updated_at or datetime.now(), file.id)
             )
             self.connection.commit()
+            self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error updating project: {e}")
 
-    def delete_project(self, project_id):
+    def delete_record(self, project_id):
         """Delete project from the database by ID."""
         try:
             sql = "DELETE FROM projects WHERE id = ?"
             self.cursor.execute(sql, (project_id,))
             self.connection.commit()
+            self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error deleting project: {e}")
 

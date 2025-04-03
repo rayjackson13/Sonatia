@@ -4,7 +4,8 @@ from PySide6.QtCore import Qt, QEvent
 from components.common.opacity_button import OpacityButton
 from components.common.svg_icon import SvgIcon, Alignment
 from constants.colors import Colors
-from store.settings import SettingsStore, FolderModel
+from db.manager import DatabaseManager
+from db.folders import FolderModel
 
 root_style = f"""
     FoldersListItem {{
@@ -86,7 +87,8 @@ class FoldersListItem(QLabel):
         layout.addWidget(button, stretch=0)
         
     def on_remove_pressed(self):
-        SettingsStore().remove_folder(self.__folder_id)
+        controller = DatabaseManager.get_controller('folders')
+        controller.delete_record(self.__folder_id)
 
     def eventFilter(self, obj, event):
         is_hovered = event.type() == QEvent.Enter

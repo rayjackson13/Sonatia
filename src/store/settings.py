@@ -22,11 +22,11 @@ class SettingsStore(QObject):
             self.__db = FolderDBController()
 
     def add_folder(self, folder: str) -> None:
-        self.__db.insert_folders([FolderModel(path=folder)])
+        self.__db.insert_records([FolderModel(path=folder)])
         self.data_updated.emit()
 
     def get_folders(self) -> list[FolderModel]:
-        return self.__db.get_all_folders()
+        return self.__db.fetch_all()
 
     def remove_folder(self, folder_id: int) -> None:
         self.__db.delete_folder(folder_id)
