@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea
 
 from components.common.inset_shadow_box import InsetShadowBox
 from constants.colors import Colors
-from models.file import FileModel
+from models.project import ProjectModel
 from store.project import ProjectStore
 from utils.files import index_files
 
@@ -41,7 +41,7 @@ files: list[tuple[str, str, list[str]]] = [
 
 
 class RecentsSection(QWidget):
-    def __init__(self, open_project: Callable[[FileModel], None]):
+    def __init__(self, open_project: Callable[[ProjectModel], None]):
         super().__init__()
 
         self.__open_project = open_project
@@ -87,8 +87,7 @@ class RecentsSection(QWidget):
         scroll_layout.setSpacing(4)
         scroll_layout.setAlignment(Qt.AlignTop)
 
-        files = sorted(self.__files, key=lambda x: x.updated_at, reverse=True)
-        for file in files:
+        for file in self.__files:
             item = RecentsItem(file)
             item.clicked.connect(partial(self.on_project_clicked, file))
             scroll_layout.addWidget(item)
@@ -98,7 +97,7 @@ class RecentsSection(QWidget):
         layout.addWidget(scroll_area)
         parent.setLayout(layout)
 
-    def on_project_clicked(self, file: FileModel):
+    def on_project_clicked(self, file: ProjectModel):
         store = ProjectStore.get_instance()
-        store.set_file(file)
+        store.set_project(file)
         self.__open_project()

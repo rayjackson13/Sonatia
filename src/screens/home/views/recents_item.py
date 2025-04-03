@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QEvent
 
 from components.common.svg_icon import SvgIcon
 from constants.colors import Colors
-from models.file import FileModel
+from models.project import ProjectModel
 
 button_style = f"""
     QPushButton#RecentsItem {{
@@ -44,7 +44,7 @@ def get_label_style(hover: bool):
 
 
 class RecentsItem(QPushButton):
-    def __init__(self, file: FileModel, parent=None):
+    def __init__(self, file: ProjectModel, parent=None):
         super().__init__(parent)
 
         self.__file = file

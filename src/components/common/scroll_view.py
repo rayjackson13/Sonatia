@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea
 
 from components.common.inset_shadow_box import InsetShadowBox
-from models.file import FileModel
+from models.project import ProjectModel
 from store.project import ProjectStore
 
 box_style = "QWidget#ScrollView { background-color: transparent; }"
@@ -46,7 +46,7 @@ class ScrollView(InsetShadowBox):
         self.setLayout(layout)
         self.scroll_layout = scroll_layout
 
-    def on_project_clicked(self, file: FileModel):
+    def on_project_clicked(self, file: ProjectModel):
         store = ProjectStore.get_instance()
-        store.set_file(file)
+        store.set_project(file)
         self.__open_project()

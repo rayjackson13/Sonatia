@@ -1,11 +1,11 @@
 from PySide6.QtCore import Signal, QObject
-from models.file import FileModel
+from models.project import ProjectModel
 
 
 class ProjectStore(QObject):
     _instance = None
 
-    data_updated = Signal(FileModel)
+    data_updated = Signal(ProjectModel)
 
     @staticmethod
     def get_instance():
@@ -19,11 +19,11 @@ class ProjectStore(QObject):
             raise Exception("This class is a singleton!")
 
         super().__init__()
-        self.__file = None
+        self.__project = None
 
-    def set_file(self, file: FileModel) -> None:
-        self.__file = file
-        self.data_updated.emit(file)
+    def set_project(self, project: ProjectModel) -> None:
+        self.__project = project
+        self.data_updated.emit(project)
 
-    def get_file(self) -> FileModel | None:
-        return self.__file
+    def get_project(self) -> ProjectModel | None:
+        return self.__project

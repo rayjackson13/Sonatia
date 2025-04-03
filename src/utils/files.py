@@ -1,29 +1,15 @@
 from pathlib import Path
 from datetime import datetime
 
-from db.files import FileDBController, FileModel
-
-FOLDERS = [r"D:\Music", r"C:\Users\rayja\Documents\Music"]
-
-
-def get_file_paths() -> list[str]:
-    all_paths = []
-
-    for folder_path in FOLDERS:
-        folder = Path(folder_path)
-
-        all_paths.extend(
-            [
-                str(file)
-                for file in folder.rglob("*.als")
-                if "Backup" not in file.parts and not file.name.startswith(".")
-            ]
-        )
-
-    return all_paths
+from db.projects import ProjectDBController, ProjectModel
+from store.settings import SettingsStore, FolderModel
 
 
-def get_file_data(file_path: str) -> FileModel | None:
+def get_folders() -> list[FolderModel]:
+    return SettingsStore().get_folders()
+
+
+def get_project_data(file_path: str, folder: FolderModel) -> ProjectModel | None:
     path = Path(file_path)
 
     if not path.exists() or not path.is_file():
@@ -33,16 +19,31 @@ def get_file_data(file_path: str) -> FileModel | None:
     timestamp = path.stat().st_mtime
     updated_at = datetime.fromtimestamp(timestamp)
 
-    return FileModel(file_id=None, path=file_path, name=name, updated_at=updated_at)
+    return ProjectModel(
+        file_id=None,
+        path=file_path,
+        name=name,
+        folder_id=folder.id,
+        updated_at=updated_at,
+    )
 
 
-def index_files() -> list[FileModel]:
-    file_paths = get_file_paths()
-    files: list[FileModel] = []
-    for path in file_paths:
-        files.append(get_file_data(path))
+def get_files_in_folder(folder: FolderModel):
+    return [
+        get_project_data(str(file), folder)
+        for file in Path(folder.path).rglob("*.als")
+        if "Backup" not in file.parts and not file.name.startswith(".")
+    ]
 
-    controller = FileDBController()
-    controller.insert_files(files)
 
-    return controller.get_all_files()
+def index_files() -> list[ProjectModel]:
+    projects: list[ProjectModel] = []
+    folders = get_folders()
+
+    for folder in folders:
+        projects.extend(get_files_in_folder(folder))
+
+    controller = ProjectDBController()
+    controller.insert_projects(projects)
+
+    return controller.get_by_id()

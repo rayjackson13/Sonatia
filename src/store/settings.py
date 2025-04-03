@@ -29,6 +29,5 @@ class SettingsStore(QObject):
         return self.__db.get_all_folders()
 
     def remove_folder(self, folder_id: int) -> None:
-        print('remove folder', folder_id)
         self.__db.delete_folder(folder_id)
         self.data_updated.emit()

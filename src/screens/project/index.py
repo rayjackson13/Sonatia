@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLayout
 from PySide6.QtCore import Qt
 
-from models.file import FileModel
 from store.navigation import NavigationStore
 from store.project import ProjectStore
 
@@ -44,7 +43,7 @@ class ProjectScreen(QWidget):
         self.layout.addWidget(button)
 
     def get_project_title(self) -> str:
-        project = self.store.get_file()
+        project = self.store.get_project()
         return project.name if project else ""
 
     def on_data_updated(self) -> None:
