@@ -46,4 +46,4 @@ def index_files() -> list[ProjectModel]:
     controller = ProjectDBController()
     controller.insert_projects(projects)
 
-    return controller.get_by_id()
+    return controller.get_all_projects()

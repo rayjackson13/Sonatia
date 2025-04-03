@@ -1,6 +1,5 @@
 import sqlite3
 import os
-from datetime import datetime
 
 from models.folder import FolderModel
 
@@ -8,16 +7,7 @@ DB_PATH = "db/folders.db"
 
 
 class FolderDBController:
-    _instance = None  # Singleton instance
-
-    def __new__(cls):
-        """Create or return the singleton instance."""
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialize()
-        return cls._instance
-
-    def _initialize(self):
+    def __init__(self):
         """Initialize the database connection and cursor."""
         try:
             os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -85,6 +75,5 @@ class FolderDBController:
                 self.connection.close()
                 self.connection = None
                 self.cursor = None
-                FolderDBController._instance = None  # Reset the singleton instance
         except sqlite3.Error as e:
             print(f"Error closing the database connection: {e}")

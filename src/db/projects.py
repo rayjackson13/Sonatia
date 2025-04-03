@@ -8,16 +8,7 @@ DB_PATH = "db/projects.db"
 
 
 class ProjectDBController:
-    _instance = None  # Singleton instance
-
-    def __new__(cls):
-        """Create or return the singleton instance."""
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialize()
-        return cls._instance
-
-    def _initialize(self):
+    def __init__(self):
         """Initialize the database connection and cursor."""
         try:
             os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -68,7 +59,7 @@ class ProjectDBController:
         except sqlite3.Error as e:
             print(f"Error inserting project: {e}")
 
-    def get_by_id(self) -> list[ProjectModel]:
+    def get_all_projects(self) -> list[ProjectModel]:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
             sql = """
@@ -92,7 +83,7 @@ class ProjectDBController:
             print(f"Error fetching projects: {e}")
             return []
 
-    def get_by_id(self, id: int) -> ProjectModel:
+    def get_project_by_id(self, id: int) -> ProjectModel:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
             sql = """
@@ -146,6 +137,5 @@ class ProjectDBController:
                 self.connection.close()
                 self.connection = None
                 self.cursor = None
-                ProjectDBController._instance = None  # Reset the singleton instance
         except sqlite3.Error as e:
             print(f"Error closing the database connection: {e}")
