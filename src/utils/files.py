@@ -1,12 +1,14 @@
 from pathlib import Path
 from datetime import datetime
 
-from db.projects import ProjectDBController, ProjectModel
-from store.settings import SettingsStore, FolderModel
+from db.manager import DatabaseManager
+from db.folders import FolderModel
+from db.projects import ProjectModel
 
 
 def get_folders() -> list[FolderModel]:
-    return SettingsStore().get_folders()
+    controller = DatabaseManager.get_controller('folders')
+    return controller.fetch_all()
 
 
 def get_project_data(file_path: str, folder: FolderModel) -> ProjectModel | None:
@@ -43,7 +45,7 @@ def index_files() -> list[ProjectModel]:
     for folder in folders:
         projects.extend(get_files_in_folder(folder))
 
-    controller = ProjectDBController()
+    controller = DatabaseManager.get_controller('projects')
     controller.insert_records(projects)
 
     return controller.fetch_all()
