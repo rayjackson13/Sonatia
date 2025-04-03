@@ -15,13 +15,11 @@ class SettingsStore(QObject):
         return cls._instance
 
     def __init__(self):
-        if hasattr(self, '__initialized'):
-            return
+        if not hasattr(self, "_initialized"):
+            super().__init__()
 
-        super().__init__()
-
-        self.__initialized = True
-        self.__db = FolderDBController()
+            self._initialized = True
+            self.__db = FolderDBController()
 
     def add_folder(self, folder: str) -> None:
         self.__db.insert_folders([FolderModel(path=folder)])
@@ -29,3 +27,8 @@ class SettingsStore(QObject):
 
     def get_folders(self) -> list[FolderModel]:
         return self.__db.get_all_folders()
+
+    def remove_folder(self, folder_id: int) -> None:
+        print('remove folder', folder_id)
+        self.__db.delete_folder(folder_id)
+        self.data_updated.emit()

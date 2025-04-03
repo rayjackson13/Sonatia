@@ -69,7 +69,7 @@ class FoldersSection(QWidget):
         self.scrollview.scroll_layout.addWidget(add_btn)
         data = self.get_folders()
         for item in data:
-            self.scrollview.scroll_layout.addWidget(FoldersListItem(item.path))
+            self.scrollview.scroll_layout.addWidget(FoldersListItem(item))
 
 
     def on_add_pressed(self):

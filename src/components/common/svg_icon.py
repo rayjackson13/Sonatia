@@ -44,7 +44,6 @@ class SvgIcon(QWidget):
         scaled_size = svg_size.scaled(available_rect.size(), Qt.KeepAspectRatio)
         top_left = self.get_top_left_position(available_rect, scaled_size)
         target_rect = QRect(top_left, scaled_size)
-        print(target_rect)
 
         # Render the SVG into the scaled rectangle
         if self.svg_renderer.isValid():

@@ -1,8 +1,10 @@
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QLayout
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout
 from PySide6.QtCore import Qt, QEvent
 
+from components.common.opacity_button import OpacityButton
 from components.common.svg_icon import SvgIcon, Alignment
 from constants.colors import Colors
+from store.settings import SettingsStore, FolderModel
 
 root_style = f"""
     FoldersListItem {{
@@ -21,16 +23,10 @@ root_style = f"""
 
 delete_style = f"""
     QPushButton#FolderListItemDelButton {{
-        margin-left: 4px;
-        text-align: right;
-    }}
-    QPushButton#FolderListItemDelButton:hover {{
-        background-color: transparent;
-    }}
-    QPushButton#FolderListItemDelButton:clicked {{
-        background-color: transparent;
+        border: 0px;
     }}
 """
+
 
 def get_label_style(hover: bool):
     color = Colors.WHITE if hover else Colors.FG_PRIMARY
@@ -46,45 +42,51 @@ def get_label_style(hover: bool):
 
 
 class FoldersListItem(QLabel):
-    def __init__(self, folder_path: str, parent=None):
+    def __init__(self, folder: FolderModel, parent=None):
         super().__init__(parent)
-        
-        self.setObjectName('FoldersListItem')
+
+        self.__folder_id = folder.id
+        self.setObjectName("FoldersListItem")
         self.setStyleSheet(root_style)
         self.setMinimumHeight(32)
         self.raise_()
-        
+
         layout = QHBoxLayout()
         layout.setContentsMargins(8, 0, 8, 0)
         layout.setSpacing(0)
 
-        icon = SvgIcon('assets/svg/folder.svg', 16, 16)       
-        label = QLabel(folder_path)
-        label.setObjectName('FolderListItemLabel')
+        icon = SvgIcon("assets/svg/folder.svg", 16, 16)
+        label = QLabel(folder.path)
+        label.setObjectName("FolderListItemLabel")
         label.setStyleSheet(get_label_style(False))
-        
+
         layout.addWidget(icon)
         layout.addSpacing(12)
         layout.addWidget(label)
         layout.addStretch(1)
         self.render_remove_button(layout)
-        
+
         self.setLayout(layout)
-        
+
     def render_remove_button(self, layout: QLayout):
-        button = QPushButton()
+        button = OpacityButton()
         button.setFixedWidth(32)
-        button.setObjectName('FolderListItemDelButton')
+        button.setObjectName("FolderListItemDelButton")
         button.setStyleSheet(delete_style)
-        button.setCursor(Qt.PointingHandCursor)
+        button.clicked.connect(self.on_remove_pressed)
+
         b_layout = QHBoxLayout()
         b_layout.setAlignment(Qt.AlignRight)
-        b_layout.setContentsMargins(0,0,0,0)
+        b_layout.setContentsMargins(0, 0, 0, 0)
         b_layout.setSpacing(0)
-        icon = SvgIcon('assets/svg/remove.svg', 16, 16, Alignment.Right)
+
+        icon = SvgIcon("assets/svg/remove.svg", 16, 16, Alignment.Right)
         b_layout.addWidget(icon)
         button.setLayout(b_layout)
         layout.addWidget(button, stretch=0)
+        
+    def on_remove_pressed(self):
+        SettingsStore().remove_folder(self.__folder_id)
 
     def eventFilter(self, obj, event):
         is_hovered = event.type() == QEvent.Enter
@@ -92,6 +94,5 @@ class FoldersListItem(QLabel):
 
         if event.type() in (QEvent.Enter, QEvent.Leave):
             self.label.setStyleSheet(label_style)
-            
+
         return super().eventFilter(obj, event)
-        
