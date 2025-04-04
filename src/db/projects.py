@@ -12,7 +12,7 @@ DB_PATH = "db/projects.db"
 
 class ProjectDBController(AbstractDBController[ProjectModel]):
     data_updated = Signal()
-    
+
     def __init__(self):
         """Initialize the database connection and cursor."""
         super().__init__()
@@ -35,7 +35,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
                     path TEXT NOT NULL UNIQUE,
-                    folder_id INTEGER NOT NULL,
+                    folder_path TEXT NOT NULL,
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             """
@@ -48,14 +48,14 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         """Insert a project into the database."""
         try:
             sql = """
-                INSERT OR IGNORE INTO projects (name, path, folder_id, updated_at)
+                INSERT OR IGNORE INTO projects (name, path, folder_path, updated_at)
                 VALUES (?, ?, ?, ?)
             """
             data = [
                 (
                     project.name,
                     project.path,
-                    project.folder_id,
+                    project.folder_path,
                     project.updated_at or datetime.now(),
                 )
                 for project in projects
@@ -66,14 +66,15 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         except sqlite3.Error as e:
             print(f"Error inserting project: {e}")
 
-    def fetch_all(self) -> list[ProjectModel]:
+    def fetch_all(self, condition: str | None) -> list[ProjectModel]:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
-            sql = """
-                SELECT id, name, path, folder_id, updated_at 
-                FROM projects
-                ORDER BY updated_at DESC
-            """
+            sql = "SELECT id, name, path, folder_path, updated_at FROM projects"
+            if condition:
+                sql += f" WHERE {condition}"
+            sql += " ORDER BY updated_at DESC"
+
+            print(sql)
             self.cursor.execute(sql)
             rows = self.cursor.fetchall()
             return [
@@ -81,7 +82,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
                     file_id=row[0],
                     name=row[1],
                     path=row[2],
-                    folder_id=row[3],
+                    folder_path=row[3],
                     updated_at=row[4],
                 )
                 for row in rows
@@ -94,7 +95,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
             sql = """
-                SELECT id, name, path, folder_id, updated_at 
+                SELECT id, name, path, folder_path, updated_at 
                 FROM projects
                 ORDER BY updated_at DESC
                 WHERE id = ?
@@ -105,7 +106,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
                 file_id=row[0],
                 name=row[1],
                 path=row[2],
-                folder_id=row[3],
+                folder_path=row[3],
                 updated_at=row[4],
             )
         except sqlite3.Error as e:

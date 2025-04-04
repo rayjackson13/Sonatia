@@ -25,7 +25,7 @@ def get_project_data(file_path: str, folder: FolderModel) -> ProjectModel | None
         file_id=None,
         path=file_path,
         name=name,
-        folder_id=folder.id,
+        folder_path=folder.path,
         updated_at=updated_at,
     )
 
@@ -48,4 +48,6 @@ def index_files() -> list[ProjectModel]:
     controller = DatabaseManager.get_controller('projects')
     controller.insert_records(projects)
 
-    return controller.fetch_all()
+    folder_paths = [f'"{folder.path}"' for folder in folders]
+    folder_paths_str = ','.join(folder_paths)
+    return controller.fetch_all(f"folder_path in ({folder_paths_str})")

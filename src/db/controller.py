@@ -6,13 +6,14 @@ from PySide6.QtCore import QObject, Signal
 # Define a generic type variable T
 T = TypeVar("T")
 
+
 class AbstractDBController(QObject, Generic[T]):
     @property
     @abstractmethod
     def data_updated(self) -> Signal:
         """Abstract property for database update signal."""
         pass
-    
+
     @abstractmethod
     def create_table(self) -> None:
         """Abstract method to create a table."""
@@ -24,7 +25,7 @@ class AbstractDBController(QObject, Generic[T]):
         pass
 
     @abstractmethod
-    def fetch_all(self) -> List[T]:
+    def fetch_all(self, condition: str | None) -> List[T]:
         """Abstract method to fetch all records."""
         pass
 
