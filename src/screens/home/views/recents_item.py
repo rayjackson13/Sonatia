@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, QEvent
 from components.common.svg_icon import SvgIcon
 from constants.colors import Colors
 from models.project import ProjectModel
+from utils.projects import get_project_title
 
 from .open_button import OpenInDAWButton
 
@@ -56,7 +57,7 @@ class RecentsItem(QPushButton):
 
         self.installEventFilter(self)
         self.setCursor(Qt.PointingHandCursor)
-        self.setObjectName('RecentsItem')
+        self.setObjectName("RecentsItem")
         self.setStyleSheet(button_style)
 
     def init_ui(self):
@@ -78,16 +79,16 @@ class RecentsItem(QPushButton):
         layout.addWidget(icon)
 
     def draw_text(self, layout: QLayout):
-        self.label = QLabel(self.__file.name)
-        self.label.setObjectName('RecentsItemLabel')
+        self.label = QLabel(get_project_title(self.__file))
+        self.label.setObjectName("RecentsItemLabel")
         self.label.setStyleSheet(get_label_style(False))
         layout.addWidget(self.label)
-        
+
     def draw_open_btn(self, layout: QLayout):
         self.open_btn = OpenInDAWButton(self.__file.path)
         self.toggle_open_btn(False)
         layout.addWidget(self.open_btn)
-        
+
     def toggle_open_btn(self, visible: bool):
         self.open_btn.setVisible(visible)
 
@@ -98,5 +99,5 @@ class RecentsItem(QPushButton):
         if event.type() in (QEvent.Enter, QEvent.Leave):
             self.label.setStyleSheet(label_style)
             self.toggle_open_btn(event.type() == QEvent.Enter)
-            
+
         return super().eventFilter(obj, event)

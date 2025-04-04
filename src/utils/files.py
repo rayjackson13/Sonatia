@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -24,8 +25,9 @@ def get_project_data(file_path: str, folder: FolderModel) -> ProjectModel | None
     return ProjectModel(
         file_id=None,
         path=file_path,
-        name=name,
+        filename=name,
         folder_path=folder.path,
+        title=None,
         updated_at=updated_at,
     )
 
@@ -38,7 +40,7 @@ def get_files_in_folder(folder: FolderModel):
     ]
 
 
-def index_files() -> list[ProjectModel]:
+def index_files() -> None:
     projects: list[ProjectModel] = []
     folders = get_folders()
 
@@ -49,6 +51,17 @@ def index_files() -> list[ProjectModel]:
     controller.insert_records(projects)
     controller.update_records(projects)
 
+def list_files() -> list[ProjectModel]:
+    folders = get_folders()
+    controller = DatabaseManager.get_controller(DBNames.Projects)
     folder_paths = [f'"{folder.path}"' for folder in folders]
     folder_paths_str = ','.join(folder_paths)
     return controller.fetch_all(f"folder_path in ({folder_paths_str})")
+    
+
+def open_file(file_path: str) -> None:
+    try:
+        os.startfile(file_path)
+    except FileNotFoundError as e:
+        print(f"Could not open file at {file_path}: {e}")
+        

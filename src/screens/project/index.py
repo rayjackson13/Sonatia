@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 
 from navigation.index import Navigation
 from store.project import ProjectStore
+from utils.projects import get_project_title
 
 from .views.hero import HeroSection
 
@@ -27,14 +28,17 @@ class ProjectScreen(QWidget):
                 widget.deleteLater()
 
     def render(self):
+        project = self.store.get_project()
+        if not project:
+            return
+        
         self.clear_layout(self._layout)
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(0)
         self._layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
-        hero = HeroSection()
-        title_text = self.get_project_title()
-        label = QLabel(title_text)
+        hero = HeroSection(project)
+        label = QLabel(get_project_title(project))
         label.setObjectName("ProjectScreenTitle")
         label.setStyleSheet("QLabel#ProjectScreenTitle { color: white; }")
         button = QPushButton("Go Back")
@@ -45,10 +49,6 @@ class ProjectScreen(QWidget):
         self._layout.addWidget(hero)
         self._layout.addWidget(label)
         self._layout.addWidget(button)
-
-    def get_project_title(self) -> str:
-        project = self.store.get_project()
-        return project.name if project else ""
 
     def on_data_updated(self) -> None:
         """Update the UI when data changes in the ProjectStore."""

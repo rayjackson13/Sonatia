@@ -33,9 +33,10 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
                 """
                 CREATE TABLE IF NOT EXISTS projects (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
+                    filename TEXT NOT NULL,
                     path TEXT NOT NULL UNIQUE,
                     folder_path TEXT NOT NULL,
+                    title TEXT,
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             """
@@ -48,14 +49,15 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         """Insert a project into the database."""
         try:
             sql = """
-                INSERT OR IGNORE INTO projects (name, path, folder_path, updated_at)
-                VALUES (?, ?, ?, ?)
+                INSERT OR IGNORE INTO projects (filename, path, folder_path, title, updated_at)
+                VALUES (?, ?, ?, ?, ?)
             """
             data = [
                 (
-                    project.name,
+                    project.filename,
                     project.path,
                     project.folder_path,
+                    project.title,
                     project.updated_at or datetime.now(),
                 )
                 for project in projects
@@ -69,7 +71,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
     def fetch_all(self, condition: str | None) -> list[ProjectModel]:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
-            sql = "SELECT id, name, path, folder_path, `updated_at` FROM projects"
+            sql = "SELECT id, filename, path, folder_path, title, `updated_at` FROM projects"
             if condition:
                 sql += f" WHERE {condition}"
             sql += " ORDER BY updated_at DESC"
@@ -79,10 +81,11 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
             return [
                 ProjectModel(
                     file_id=row[0],
-                    name=row[1],
+                    filename=row[1],
                     path=row[2],
                     folder_path=row[3],
-                    updated_at=row[4],
+                    title=row[4],
+                    updated_at=row[5],
                 )
                 for row in rows
             ]
@@ -94,7 +97,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
             sql = """
-                SELECT id, name, path, folder_path, updated_at 
+                SELECT id, filename, path, folder_path, title, updated_at 
                 FROM projects
                 ORDER BY updated_at DESC
                 WHERE id = ?
@@ -103,10 +106,11 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
             row = self.cursor.fetchone()
             return ProjectModel(
                 file_id=row[0],
-                name=row[1],
+                filename=row[1],
                 path=row[2],
                 folder_path=row[3],
-                updated_at=row[4],
+                title=row[4],
+                updated_at=row[5],
             )
         except sqlite3.Error as e:
             print(f"Error fetching projects: {e}")
@@ -117,11 +121,11 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         try:
             sql = """
                 UPDATE projects
-                SET name = ?, path = ?, updated_at = ?
+                SET title = ?, updated_at = ?
                 WHERE id = ?
             """
             self.cursor.execute(
-                sql, (file.name, file.path, file.updated_at or datetime.now(), file.id)
+                sql, (file.title, datetime.now(), file.id)
             )
             self.connection.commit()
             self.data_updated.emit()
@@ -133,11 +137,11 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         try:
             sql = """
                 UPDATE projects
-                SET name = ?, updated_at = ?
+                SET filename = ?, updated_at = ?
                 WHERE path = ?
             """
             self.cursor.executemany(
-                sql, [(file.name, file.updated_at or datetime.now(), file.path) for file in records]
+                sql, [(file.filename, file.updated_at or datetime.now(), file.path) for file in records]
             )
             self.connection.commit()
             self.data_updated.emit()

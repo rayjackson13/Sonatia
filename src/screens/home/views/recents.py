@@ -6,7 +6,8 @@ from db.manager import DatabaseManager, DBNames, AbstractDBController
 from models.project import ProjectModel
 from navigation.index import Navigation
 from store.project import ProjectStore
-from utils.files import index_files
+from utils.files import index_files, list_files
+from utils.projects import get_project_title
 
 from .header import RecentsHeader
 from .recents_item import RecentsItem
@@ -21,10 +22,10 @@ box_style = f"""
 class RecentsSection(QWidget):
     def __init__(self):
         super().__init__()
-        folders_controller = DatabaseManager.get_controller(DBNames.Folders)
-        self.subscribe_to_db_updates(folders_controller)
+        self.subscribe_to_db_updates()
         self._layout = QVBoxLayout()
-        self.__files = index_files()
+        index_files()
+        self.__files = list_files()
         self.init_ui()
 
     def clear_layout(self, layout: QLayout):
@@ -63,13 +64,22 @@ class RecentsSection(QWidget):
         
     def on_folders_updated(self):
         """Rescan and render projects in updated folders"""
-        self.__files = index_files()
+        index_files()
+        self.__files = list_files()
         self.init_ui()
         
-    def subscribe_to_db_updates(self, controller: AbstractDBController):
-        controller.data_updated.connect(self.on_folders_updated)
+    def on_projects_updated(self):
+        """Rescan and render projects in updated folders"""
+        self.__files = list_files()
+        self.init_ui()
+        
+    def subscribe_to_db_updates(self):
+        folders_controller = DatabaseManager.get_controller(DBNames.Folders)
+        projects_controller = DatabaseManager.get_controller(DBNames.Projects)
+        folders_controller.data_updated.connect(self.on_folders_updated)
+        projects_controller.data_updated.connect(self.on_projects_updated)
         
     def open_project(self, proj: ProjectModel):
         store = ProjectStore.get_instance()
         store.set_project(proj)
-        Navigation().navigate('project', proj.name)
+        Navigation().navigate('project', get_project_title(proj))

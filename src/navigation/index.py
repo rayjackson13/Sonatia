@@ -56,6 +56,12 @@ class Navigation(QObject):
     def title(self) -> str | None:
         prev_entry = self.__history[0]
         return prev_entry[1] if len(self.__history) > 0 else ''
+    
+    def set_title(self, title: str) -> None:
+        if len(self.__history) > 0:
+            entry = self.__history[0]
+            self.__history[0] = (entry[0], title)
+            self.data_updated.emit()
 
     @property
     def can_go_back(self) -> bool:

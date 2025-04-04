@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QSizePolicy
 
 from components.common.opacity_button import OpacityButton
 from constants.colors import Colors
+from utils.files import open_file
 
 btn_style = f"""
     OpenInDAWButton {{
@@ -28,5 +29,5 @@ class OpenInDAWButton(OpacityButton):
         self.setStyleSheet(btn_style)
 
     def on_click(self):
-        os.startfile(self.__file_path)
+        open_file(self.__file_path)
         pass
