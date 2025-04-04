@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from datetime import datetime
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import Signal
 
 from models.project import ProjectModel
 
@@ -69,7 +69,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
     def fetch_all(self, condition: str | None) -> list[ProjectModel]:
         """Fetch all projects from the database and return as a list of FileModels."""
         try:
-            sql = "SELECT id, name, path, folder_path, updated_at FROM projects"
+            sql = "SELECT id, name, path, folder_path, `updated_at` FROM projects"
             if condition:
                 sql += f" WHERE {condition}"
             sql += " ORDER BY updated_at DESC"
@@ -122,6 +122,22 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
             """
             self.cursor.execute(
                 sql, (file.name, file.path, file.updated_at or datetime.now(), file.id)
+            )
+            self.connection.commit()
+            self.data_updated.emit()
+        except sqlite3.Error as e:
+            print(f"Error updating project: {e}")
+            
+    def update_records(self, records: list[ProjectModel]):
+        """Update project's information."""
+        try:
+            sql = """
+                UPDATE projects
+                SET name = ?, updated_at = ?
+                WHERE path = ?
+            """
+            self.cursor.executemany(
+                sql, [(file.name, file.updated_at or datetime.now(), file.path) for file in records]
             )
             self.connection.commit()
             self.data_updated.emit()

@@ -78,13 +78,16 @@ class FolderDBController(AbstractDBController[FolderModel]):
 
     def update_record(self, folder: FolderModel):
         """Update a folder in the database."""
-        try:
+        self.update_records([folder])
+            
+    def update_records(self, records: list[FolderModel]):
+        try: 
             sql = """
                 UPDATE folders
                 SET path = ?
                 WHERE id = ?
             """
-            self.cursor.execute(sql, (folder.path, folder.id,))
+            self.cursor.execute(sql, [(folder.path, folder.id) for folder in records])
             self.connection.commit()
             self.data_updated.emit()
         except sqlite3.Error as e:

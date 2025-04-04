@@ -47,6 +47,7 @@ def index_files() -> list[ProjectModel]:
 
     controller = DatabaseManager.get_controller(DBNames.Projects)
     controller.insert_records(projects)
+    controller.update_records(projects)
 
     folder_paths = [f'"{folder.path}"' for folder in folders]
     folder_paths_str = ','.join(folder_paths)

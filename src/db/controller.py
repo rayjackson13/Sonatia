@@ -38,6 +38,11 @@ class AbstractDBController(QObject, Generic[T]):
     def update_record(self, record: T) -> None:
         """Abstract method to update an existing record."""
         pass
+    
+    @abstractmethod
+    def update_records(self, records: List[T]) -> None:
+        """Abstract method to update multiple records."""
+        pass
 
     @abstractmethod
     def delete_record(self, record_id: int) -> None:
