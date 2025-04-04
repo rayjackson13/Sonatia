@@ -10,22 +10,8 @@ from models.project import ProjectModel
 from store.project import ProjectStore
 from utils.files import index_files
 
+from .header import RecentsHeader
 from .recents_item import RecentsItem
-
-text_style = f"""
-    QLabel#RecentsSectionTitle {{
-        color: {Colors.FG_PRIMARY};
-        font-family: Inter, sans-serif;
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 24px;
-        padding-top: 8px;
-        padding-bottom: 8px;
-        padding-left: 0;
-        margin: 0;
-        margin-left: -6px;
-    }}
-"""
 
 box_style = f"""
     QWidget#RecentsSectionBox {{
@@ -59,14 +45,13 @@ class RecentsSection(QWidget):
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(0)
 
-        l_text = QLabel("Recents")
-        l_text.setObjectName("RecentsSectionTitle")
-        l_text.setStyleSheet(text_style)
+        header = RecentsHeader()
+        header.refresh_btn.clicked.connect(self.on_folders_updated)
 
         self.scrollview = ScrollView()
         self.render_list()
 
-        self._layout.addWidget(l_text)
+        self._layout.addWidget(header)
         self._layout.addWidget(self.scrollview, 1)
         self.setLayout(self._layout)
 
