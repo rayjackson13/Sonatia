@@ -4,6 +4,8 @@ from PySide6.QtCore import Qt
 from navigation.index import Navigation
 from store.project import ProjectStore
 
+from .views.hero import HeroSection
+
 
 class ProjectScreen(QWidget):
     def __init__(self):
@@ -12,8 +14,8 @@ class ProjectScreen(QWidget):
         self.store = ProjectStore.get_instance()
         self.store.data_updated.connect(self.on_data_updated)
 
-        self.layout = QVBoxLayout(self)
-        self.setLayout(self.layout)
+        self._layout = QVBoxLayout(self)
+        self.setLayout(self._layout)
 
         self.render()
 
@@ -25,10 +27,13 @@ class ProjectScreen(QWidget):
                 widget.deleteLater()
 
     def render(self):
-        self.clear_layout(self.layout)
+        self.clear_layout(self._layout)
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setSpacing(0)
+        self._layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
+        hero = HeroSection()
         title_text = self.get_project_title()
-        self.layout.setAlignment(Qt.AlignCenter)
         label = QLabel(title_text)
         label.setObjectName("ProjectScreenTitle")
         label.setStyleSheet("QLabel#ProjectScreenTitle { color: white; }")
@@ -37,8 +42,9 @@ class ProjectScreen(QWidget):
         button.setStyleSheet("QPushButton#SettingsScreenBack { color: white; }")
         button.clicked.connect(self.navigation.go_back)
 
-        self.layout.addWidget(label)
-        self.layout.addWidget(button)
+        self._layout.addWidget(hero)
+        self._layout.addWidget(label)
+        self._layout.addWidget(button)
 
     def get_project_title(self) -> str:
         project = self.store.get_project()
