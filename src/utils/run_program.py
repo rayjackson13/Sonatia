@@ -6,8 +6,7 @@ def run_program(program_path: str, *args):
     """
     try:
         command = [program_path] + list(args)
-        result = subprocess.run(command, check=True)
-        print('result', result)
+        subprocess.run(command)
     except subprocess.CalledProcessError as e:
         print(f"Error running program:\n{e.stderr}")
     except FileNotFoundError:
