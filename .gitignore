@@ -6,6 +6,7 @@ __pycache__/
 # Virtual environment
 venv/
 /db/
+/config.ini
 
 # Environment variables
 .env

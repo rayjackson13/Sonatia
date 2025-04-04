@@ -3,12 +3,14 @@ from PySide6.QtWidgets import QApplication
 
 from components.common.main_window import MainWindow
 from db.manager import DatabaseManager
+from utils.programs import ProgramHandler
 from utils.fonts import load_fonts
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     load_fonts(app)
     DatabaseManager.initialize()
+    ProgramHandler.initialize()
     
     window = MainWindow()
     window.show()

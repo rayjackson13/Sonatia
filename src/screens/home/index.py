@@ -3,6 +3,7 @@ from PySide6.QtGui import Qt
 
 from components.common.button_with_icon import ButtonWithIcon
 from navigation.index import Navigation
+from utils.programs import ProgramHandler
 
 from .views.recents import RecentsSection
 
@@ -29,7 +30,7 @@ class HomeScreen(QWidget):
         c_layout.setSpacing(0)
 
         add_button = ButtonWithIcon("New session", "add")
-        add_button.clicked.connect(self.open_settings)
+        add_button.clicked.connect(self.open_new_project)
 
         open_button = ButtonWithIcon("Open project", "folder-open")
         open_button.clicked.connect(self.open_settings)
@@ -50,3 +51,6 @@ class HomeScreen(QWidget):
 
     def open_settings(self):
         self.navigation.navigate("settings")
+        
+    def open_new_project(self):
+        ProgramHandler.run_program()
