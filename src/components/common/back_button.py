@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QHBoxLayout, QLabel, QSizePolicy
 
+from components.common.opacity_button import OpacityButton
 from components.common.svg_icon import SvgIcon
 from constants.colors import Colors
 
@@ -9,23 +10,11 @@ HOVER_OPACITY = 0.7
 PRESSED_OPACITY = 0.5
 
 
-class BackButton(QPushButton):
+class BackButton(OpacityButton):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.setMinimumSize(80, 32)
-        self.setObjectName('back_button')
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setStyleSheet(f"""
-            QPushButton#back_button {{
-                background-color: transparent;
-                border: none;
-                border-radius: 4px;
-            }}
-            QPushButton#back_button:hover {{ background-color: {Colors.HOVER}; }}
-            QPushButton#back_button:pressed {{ background-color: {Colors.SELECTED}; }}
-        """
-        )
         self.setCursor(Qt.PointingHandCursor)
 
         layout = self.get_layout()
@@ -47,8 +36,8 @@ class BackButton(QPushButton):
         layout.addWidget(icon)
         layout.addSpacing(4)
         layout.addWidget(text)
-        layout.setAlignment(Qt.AlignCenter)
+        layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
-        layout.setContentsMargins(8, 0, 8, 0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         return layout

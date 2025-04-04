@@ -6,7 +6,7 @@ from screens.settings.index import SettingsScreen
 from screens.project.index import ProjectScreen
 from store.navigation import NavigationStore
 
-screen_titles = {"main": "Home", "settings": "Settings"}
+screen_titles = {"main": "", "settings": "Settings"}
 
 
 class Navigation(QStackedWidget):
