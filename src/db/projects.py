@@ -74,7 +74,6 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
                 sql += f" WHERE {condition}"
             sql += " ORDER BY updated_at DESC"
 
-            print(sql)
             self.cursor.execute(sql)
             rows = self.cursor.fetchall()
             return [
