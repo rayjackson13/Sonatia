@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QFileDialog, QLayout
 
 from components.common.scroll_view import ScrollView
 from constants.colors import Colors
-from db.manager import DatabaseManager
+from db.manager import DatabaseManager, DBNames
 from db.folders import FolderModel
 
 from .add_button import AddButton
@@ -27,7 +27,7 @@ text_style = f"""
 class FoldersSection(QWidget):
     def __init__(self):
         super().__init__()
-        self._db_controller = DatabaseManager.get_controller("folders")
+        self._db_controller = DatabaseManager.get_controller(DBNames.Folders)
         self.subscribe_to_db_updates()
         self._layout = QVBoxLayout()
         self.render_ui()

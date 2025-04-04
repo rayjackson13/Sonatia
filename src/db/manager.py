@@ -1,7 +1,20 @@
 from .controller import AbstractDBController
+from .folders import FolderDBController
+from .projects import ProjectDBController
+
+
+class DBNames:
+    Folders = "folders"
+    Projects = "projects"
+
 
 class DatabaseManager:
     _controllers: dict[str, AbstractDBController] = {}
+
+    @staticmethod
+    def initialize() -> None:
+        DatabaseManager.register_controller(DBNames.Folders, FolderDBController())
+        DatabaseManager.register_controller(DBNames.Projects, ProjectDBController())
 
     @staticmethod
     def register_controller(name: str, instance: AbstractDBController) -> None:

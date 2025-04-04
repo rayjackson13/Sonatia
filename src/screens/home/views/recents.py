@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, QLayout
 
 from components.common.scroll_view import ScrollView
 from constants.colors import Colors
-from db.manager import DatabaseManager, AbstractDBController
+from db.manager import DatabaseManager, DBNames, AbstractDBController
 from models.project import ProjectModel
 from store.project import ProjectStore
 from utils.files import index_files
@@ -37,7 +37,7 @@ box_style = f"""
 class RecentsSection(QWidget):
     def __init__(self, open_project: Callable[[ProjectModel], None]):
         super().__init__()
-        folders_controller = DatabaseManager.get_controller("folders")
+        folders_controller = DatabaseManager.get_controller(DBNames.Folders)
         self.subscribe_to_db_updates(folders_controller)
         self.__open_project = open_project
         self._layout = QVBoxLayout()
