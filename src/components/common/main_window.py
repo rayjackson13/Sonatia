@@ -5,6 +5,9 @@ from constants.colors import Colors
 from components.common.titlebar import CustomTitleBar
 from components.common.footer import Footer
 from navigation.index import Navigation
+from screens.home.index import HomeScreen
+from screens.project.index import ProjectScreen
+from screens.settings.index import SettingsScreen
 
 from utils.window import center_window
 
@@ -14,6 +17,8 @@ class MainWindow(FramelessWindow):
         super().__init__()
         self.resize(1200, 900)  # Set window dimensions
         self.setMinimumWidth(1200)
+        self.navigation = Navigation(stack_parent=self)
+        self.init_nav()
 
         center_window(self)
 
@@ -21,8 +26,7 @@ class MainWindow(FramelessWindow):
         self.setWindowTitle("Sonatia")  # Optional for internal title usage
         self.setResizeEnabled(True)  # Enable resizing if needed
 
-        self.navigation = Navigation(self)
-        self.setTitleBar(CustomTitleBar(self, self.navigation))
+        self.setTitleBar(CustomTitleBar(self))
         self.setObjectName('MainWindow')
 
         # Paint the entire window black
@@ -32,6 +36,13 @@ class MainWindow(FramelessWindow):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)  # Add margins for titlebar
         layout.setSpacing(0)
-        layout.addWidget(self.navigation, stretch=1)
-        layout.addWidget(Footer())
+        layout.addWidget(self.navigation.stack, stretch=1)
+        layout.addWidget(Footer(self))
         self.setLayout(layout)
+        
+    def init_nav(self):
+        self.navigation.register_screen("main", HomeScreen())
+        self.navigation.register_screen("settings", SettingsScreen())
+        self.navigation.register_screen("project", ProjectScreen())
+
+        self.navigation.navigate("main")

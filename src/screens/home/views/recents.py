@@ -1,12 +1,10 @@
-from typing import Callable
 from functools import partial
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, QLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLayout
 
 from components.common.scroll_view import ScrollView
-from constants.colors import Colors
 from db.manager import DatabaseManager, DBNames, AbstractDBController
 from models.project import ProjectModel
+from navigation.index import Navigation
 from store.project import ProjectStore
 from utils.files import index_files
 
@@ -21,11 +19,10 @@ box_style = f"""
 
 
 class RecentsSection(QWidget):
-    def __init__(self, open_project: Callable[[ProjectModel], None]):
+    def __init__(self):
         super().__init__()
         folders_controller = DatabaseManager.get_controller(DBNames.Folders)
         self.subscribe_to_db_updates(folders_controller)
-        self.__open_project = open_project
         self._layout = QVBoxLayout()
         self.__files = index_files()
         self.init_ui()
@@ -60,13 +57,9 @@ class RecentsSection(QWidget):
 
         for file in self.__files:
             item = RecentsItem(file)
-            item.clicked.connect(partial(self.on_project_clicked, file))
+            item.clicked.connect(partial(self.open_project, file))
+            item.open_btn.clicked.connect(partial(self.open_project, file))
             self.scrollview.scroll_layout.addWidget(item)
-
-    def on_project_clicked(self, file: ProjectModel):
-        store = ProjectStore.get_instance()
-        store.set_project(file)
-        self.__open_project()
         
     def on_folders_updated(self):
         """Rescan and render projects in updated folders"""
@@ -75,3 +68,8 @@ class RecentsSection(QWidget):
         
     def subscribe_to_db_updates(self, controller: AbstractDBController):
         controller.data_updated.connect(self.on_folders_updated)
+        
+    def open_project(self, proj: ProjectModel):
+        store = ProjectStore.get_instance()
+        store.set_project(proj)
+        Navigation().navigate('project', proj.name)

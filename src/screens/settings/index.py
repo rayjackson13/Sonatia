@@ -5,9 +5,8 @@ from .views.folders import FoldersSection
 
 
 class SettingsScreen(QWidget):
-    def __init__(self, navigation):
+    def __init__(self):
         super().__init__()
-        self.navigation = navigation
         self.init_ui()
 
     def init_ui(self):

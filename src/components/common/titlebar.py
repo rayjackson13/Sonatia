@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from qframelesswindow import TitleBar
 
 from constants.colors import Colors
-from store.navigation import NavigationStore
+from navigation.index import Navigation
 
 from .logo import Logo
 from .back_button import BackButton
@@ -24,20 +24,19 @@ titleBarButtonStyles = f"""
 class CustomTitleBar(TitleBar):
     """Custom title bar"""
 
-    def __init__(self, parent, navigation):
+    def __init__(self, parent):
         super().__init__(parent)
 
-        self.navigation = navigation
-        self.store = NavigationStore.get_instance()
-        self.store.data_updated.connect(self.on_data_updated)
-        self.title = self.store.get_title()
+        self.navigation = Navigation()
+        self.navigation.data_updated.connect(self.on_data_updated)
+        self.title = 'Test'
         self.back_button = BackButton()
         self.handle_system_buttons()
 
         self.init_ui()
         self.setObjectName('CustomTitleBar')
         self.setStyleSheet("TitleBar#CustomTitleBar { background-color: transparent; }")
-        self.toggle_back_button(False)
+        self.toggle_back_button(True)
 
     def init_ui(self):
         layout = self.layout()
@@ -69,7 +68,7 @@ class CustomTitleBar(TitleBar):
         self.title_label.setStyleSheet(f"QLabel#CustomTitleBarLabel {{ color: {Colors.WHITE}; }}")
         self.title_label.setAlignment(Qt.AlignCenter)
 
-        self.back_button.clicked.connect(self.navigation.go_back)
+        self.back_button.clicked.connect(Navigation().go_back)
 
         self.c_layout.addWidget(self.back_button)
         self.c_layout.addStretch(1)
@@ -116,6 +115,6 @@ class CustomTitleBar(TitleBar):
             layout.removeItem(item)
             del item
         
-    def on_data_updated(self, title: str, can_go_back: bool):
-        self.title_label.setText(title)
-        self.toggle_back_button(can_go_back)
+    def on_data_updated(self):
+        self.title_label.setText(self.navigation.title)
+        self.toggle_back_button(self.navigation.can_go_back)
