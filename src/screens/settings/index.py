@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtGui import Qt
 
 from .views.folders import FoldersSection
+from .views.program import ProgramSection
 
 
 class SettingsScreen(QWidget):
@@ -25,6 +26,7 @@ class SettingsScreen(QWidget):
 
         c_layout.addWidget(FoldersSection())
         c_layout.addSpacing(48)
+        c_layout.addWidget(ProgramSection())
         c_layout.addStretch(1)
 
         container.setLayout(c_layout)
