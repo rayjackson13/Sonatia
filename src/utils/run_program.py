@@ -1,4 +1,6 @@
+import multiprocessing
 import subprocess
+
 
 def run_program(program_path: str, *args):
     """
@@ -6,7 +8,8 @@ def run_program(program_path: str, *args):
     """
     try:
         command = [program_path] + list(args)
-        subprocess.run(command)
+        process = multiprocessing.Process(target=subprocess.run, args=(command,))
+        process.start()
     except subprocess.CalledProcessError as e:
         print(f"Error running program:\n{e.stderr}")
     except FileNotFoundError:
