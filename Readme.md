@@ -42,9 +42,9 @@ To build the Sonatia application into a single executable file, you can use **Py
    ```
 2. **Create the Executable**: Run the following command to bundle the project into a onefile executable.
    ```
-   pyinstaller --onefile src/app.py
+   pyinstaller app.spec
    ```
-3. **Locate the Executable**: The executable will be found in the `dist/` folder. You can rename and move it to your preferred location.
+3. **Locate the Executable**: The executable will be found in the `dist/` folder.
 
 ---
 
