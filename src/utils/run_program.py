@@ -1,6 +1,12 @@
-import multiprocessing
 import subprocess
+import threading
 
+
+def run_subprocess(command):
+    """
+    Function to execute a command using subprocess.run.
+    """
+    subprocess.run(command, check=True, shell=True)
 
 def run_program(program_path: str, *args):
     """
@@ -8,8 +14,8 @@ def run_program(program_path: str, *args):
     """
     try:
         command = [program_path] + list(args)
-        process = multiprocessing.Process(target=subprocess.run, args=(command,))
-        process.start()
+        thread = threading.Thread(target=run_subprocess, args=(command,))
+        thread.start()
     except subprocess.CalledProcessError as e:
         print(f"Error running program:\n{e.stderr}")
     except FileNotFoundError:
