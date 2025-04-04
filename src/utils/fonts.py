@@ -15,6 +15,7 @@ def load_fonts(app: QApplication):
     
     font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
     custom_font = QFont(font_family)
+    custom_font.setHintingPreference(QFont.PreferNoHinting)
     custom_font.setPixelSize(16)
     custom_font.setStyleStrategy(QFont.PreferAntialias)
     app.setFont(custom_font)

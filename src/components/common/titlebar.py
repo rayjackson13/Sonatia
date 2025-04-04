@@ -62,7 +62,7 @@ class CustomTitleBar(TitleBar):
 
         self.title_label = QLabel(self.title)
         title_font = QFont("Inter")
-        title_font.setPixelSize(20)
+        title_font.setPixelSize(16)
         title_font.setWeight(QFont.Medium)
         self.title_label.setFont(title_font)
         self.title_label.setObjectName('CustomTitleBarLabel')

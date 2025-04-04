@@ -1,9 +1,11 @@
-from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QLayout
+from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QLayout, QSizePolicy
 from PySide6.QtCore import Qt, QEvent
 
 from components.common.svg_icon import SvgIcon
 from constants.colors import Colors
 from models.project import ProjectModel
+
+from .open_button import OpenInDAWButton
 
 button_style = f"""
     QPushButton#RecentsItem {{
@@ -61,11 +63,13 @@ class RecentsItem(QPushButton):
         layout = QHBoxLayout()
         layout.setContentsMargins(8, 0, 8, 0)
         layout.setSpacing(0)
-        layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        layout.setAlignment(Qt.AlignVCenter)
 
         self.draw_icon(layout)
         layout.addSpacing(12)
         self.draw_text(layout)
+        layout.addStretch()
+        self.draw_open_btn(layout)
 
         self.setLayout(layout)
 
@@ -78,6 +82,14 @@ class RecentsItem(QPushButton):
         self.label.setObjectName('RecentsItemLabel')
         self.label.setStyleSheet(get_label_style(False))
         layout.addWidget(self.label)
+        
+    def draw_open_btn(self, layout: QLayout):
+        self.open_btn = OpenInDAWButton(self.__file.path)
+        self.toggle_open_btn(False)
+        layout.addWidget(self.open_btn)
+        
+    def toggle_open_btn(self, visible: bool):
+        self.open_btn.setVisible(visible)
 
     def eventFilter(self, obj, event):
         is_hovered = event.type() == QEvent.Enter
@@ -85,5 +97,6 @@ class RecentsItem(QPushButton):
 
         if event.type() in (QEvent.Enter, QEvent.Leave):
             self.label.setStyleSheet(label_style)
+            self.toggle_open_btn(event.type() == QEvent.Enter)
             
         return super().eventFilter(obj, event)
