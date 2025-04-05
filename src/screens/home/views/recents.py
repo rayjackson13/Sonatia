@@ -1,6 +1,5 @@
 import threading
 from functools import partial
-from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLayout
 
 from components.common.scroll_view import ScrollView
@@ -8,7 +7,8 @@ from db.manager import DatabaseManager, DBNames
 from models.project import ProjectModel
 from navigation.index import Navigation
 from store.project import ProjectStore
-from utils.files import index_files, list_files
+from utils.files import list_files
+from utils.index_worker import IndexWorker
 from utils.projects import get_project_title
 
 from .header import RecentsHeader
@@ -20,17 +20,6 @@ box_style = f"""
     }}
 """
 
-class IndexWorker(QObject):
-    """Worker to index files"""
-    indexing_complete = Signal()
-    
-    def index_files(self):
-        try:
-            index_files()
-            self.indexing_complete.emit()
-        except Exception as e:
-            print(f"There was a problem while indexing files: {e}")
-
 class RecentsSection(QWidget):
     def __init__(self):
         super().__init__()
@@ -40,7 +29,6 @@ class RecentsSection(QWidget):
         self.init_ui()
 
         self.worker = IndexWorker()
-        self.worker.indexing_complete.connect(self.on_projects_updated)
         self.start_indexing()
 
     def clear_layout(self, layout: QLayout):
@@ -59,7 +47,7 @@ class RecentsSection(QWidget):
         self._layout.setSpacing(0)
 
         header = RecentsHeader()
-        header.refresh_btn.clicked.connect(self.on_refresh)
+        header.refresh_btn.clicked.connect(self.start_indexing)
 
         self.scrollview = ScrollView()
         self.render_list()
@@ -80,10 +68,6 @@ class RecentsSection(QWidget):
     def start_indexing(self):
         thread = threading.Thread(target=self.worker.index_files)
         thread.start()
-
-    def on_refresh(self):
-        """Reindex files"""
-        self.start_indexing()
 
     def on_projects_updated(self):
         """Get updated list of projects from DB"""

@@ -1,9 +1,11 @@
+import threading
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QFileDialog, QLayout
 
 from components.common.scroll_view import ScrollView
 from constants.colors import Colors
 from db.manager import DatabaseManager, DBNames
 from db.folders import FolderModel
+from utils.index_worker import IndexWorker
 
 from .add_button import AddButton
 from .list_item import FoldersListItem
@@ -31,6 +33,7 @@ class FoldersSection(QWidget):
         self.subscribe_to_db_updates()
         self._layout = QVBoxLayout()
         self.render_ui()
+        self.worker = IndexWorker()
 
     def clear_layout(self, layout: QLayout):
         while layout.count():
@@ -70,7 +73,7 @@ class FoldersSection(QWidget):
         self.scrollview.scroll_layout.addWidget(add_btn)
         data = self.get_folders()
         for item in data:
-            self.scrollview.scroll_layout.addWidget(FoldersListItem(item))
+            self.scrollview.scroll_layout.addWidget(FoldersListItem(item, self.on_remove_pressed))
 
     def on_add_pressed(self):
         folder_dialog = QFileDialog()
@@ -80,12 +83,21 @@ class FoldersSection(QWidget):
         if folder_dialog.exec():
             selected_folder = folder_dialog.selectedFiles()[0]
             self.add_folder(selected_folder)
+        
+    def on_remove_pressed(self, id: int):
+        self._db_controller.delete_record(id)
+        self.start_indexing()
 
     def add_folder(self, folder_path: str):
         self._db_controller.insert_records([FolderModel(path=folder_path)])
+        self.start_indexing()
 
     def get_folders(self):
         return self._db_controller.fetch_all()
+            
+    def start_indexing(self):
+        thread = threading.Thread(target=self.worker.index_files)
+        thread.start()
 
     def subscribe_to_db_updates(self):
         self._db_controller.data_updated.connect(self.render_ui)

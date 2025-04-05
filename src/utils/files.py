@@ -57,6 +57,8 @@ def index_files() -> None:
     projects_db.update_records(projects, no_commit=True)
     projects_db.commit()
     projects_db.close_connection()
+    # Calling updates on the main thread controller
+    DatabaseManager.get_controller(DBNames.Projects).data_updated.emit()
 
 
 def list_files() -> list[ProjectModel]:

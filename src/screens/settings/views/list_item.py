@@ -43,9 +43,10 @@ def get_label_style(hover: bool):
 
 
 class FoldersListItem(QLabel):
-    def __init__(self, folder: FolderModel, parent=None):
+    def __init__(self, folder: FolderModel, on_remove_pressed, parent=None):
         super().__init__(parent)
 
+        self.on_remove_pressed = on_remove_pressed
         self.__folder_id = folder.id
         self.setObjectName("FoldersListItem")
         self.setStyleSheet(root_style)
@@ -74,7 +75,7 @@ class FoldersListItem(QLabel):
         button.setFixedWidth(32)
         button.setObjectName("FolderListItemDelButton")
         button.setStyleSheet(delete_style)
-        button.clicked.connect(self.on_remove_pressed)
+        button.clicked.connect(lambda: self.on_remove_pressed(self.__folder_id))
 
         b_layout = QHBoxLayout()
         b_layout.setAlignment(Qt.AlignRight)
@@ -85,10 +86,6 @@ class FoldersListItem(QLabel):
         b_layout.addWidget(icon)
         button.setLayout(b_layout)
         layout.addWidget(button, stretch=0)
-        
-    def on_remove_pressed(self):
-        controller = DatabaseManager.get_controller(DBNames.Folders)
-        controller.delete_record(self.__folder_id)
 
     def eventFilter(self, obj, event):
         is_hovered = event.type() == QEvent.Enter
