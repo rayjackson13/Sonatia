@@ -1,8 +1,10 @@
+import threading
 from functools import partial
+from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLayout
 
 from components.common.scroll_view import ScrollView
-from db.manager import DatabaseManager, DBNames, AbstractDBController
+from db.manager import DatabaseManager, DBNames
 from models.project import ProjectModel
 from navigation.index import Navigation
 from store.project import ProjectStore
@@ -18,15 +20,28 @@ box_style = f"""
     }}
 """
 
+class IndexWorker(QObject):
+    """Worker to index files"""
+    indexing_complete = Signal()
+    
+    def index_files(self):
+        try:
+            index_files()
+            self.indexing_complete.emit()
+        except Exception as e:
+            print(f"There was a problem while indexing files: {e}")
 
 class RecentsSection(QWidget):
     def __init__(self):
         super().__init__()
         self.subscribe_to_db_updates()
         self._layout = QVBoxLayout()
-        index_files()
         self.__files = list_files()
         self.init_ui()
+
+        self.worker = IndexWorker()
+        self.worker.indexing_complete.connect(self.on_projects_updated)
+        self.start_indexing()
 
     def clear_layout(self, layout: QLayout):
         while layout.count():
@@ -44,7 +59,7 @@ class RecentsSection(QWidget):
         self._layout.setSpacing(0)
 
         header = RecentsHeader()
-        header.refresh_btn.clicked.connect(self.on_folders_updated)
+        header.refresh_btn.clicked.connect(self.on_refresh)
 
         self.scrollview = ScrollView()
         self.render_list()
@@ -61,25 +76,25 @@ class RecentsSection(QWidget):
             item.clicked.connect(partial(self.open_project, file))
             item.open_btn.clicked.connect(partial(self.open_project, file))
             self.scrollview.scroll_layout.addWidget(item)
-        
-    def on_folders_updated(self):
-        """Rescan and render projects in updated folders"""
-        index_files()
-        self.__files = list_files()
-        self.init_ui()
-        
+            
+    def start_indexing(self):
+        thread = threading.Thread(target=self.worker.index_files)
+        thread.start()
+
+    def on_refresh(self):
+        """Reindex files"""
+        self.start_indexing()
+
     def on_projects_updated(self):
-        """Rescan and render projects in updated folders"""
+        """Get updated list of projects from DB"""
         self.__files = list_files()
         self.init_ui()
-        
+
     def subscribe_to_db_updates(self):
-        folders_controller = DatabaseManager.get_controller(DBNames.Folders)
         projects_controller = DatabaseManager.get_controller(DBNames.Projects)
-        folders_controller.data_updated.connect(self.on_folders_updated)
         projects_controller.data_updated.connect(self.on_projects_updated)
-        
+
     def open_project(self, proj: ProjectModel):
         store = ProjectStore.get_instance()
-        store.set_project(proj)
-        Navigation().navigate('project', get_project_title(proj))
+        store.set_project_id(proj.id)
+        Navigation().navigate("project", get_project_title(proj))

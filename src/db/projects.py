@@ -45,7 +45,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         except sqlite3.Error as e:
             print(f"Error creating table: {e}")
 
-    def insert_records(self, projects: list[ProjectModel]):
+    def insert_records(self, projects: list[ProjectModel], no_commit=False):
         """Insert a project into the database."""
         try:
             sql = """
@@ -63,8 +63,9 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
                 for project in projects
             ]
             self.cursor.executemany(sql, data)
-            self.connection.commit()
-            self.data_updated.emit()
+            if no_commit == False:
+                self.connection.commit()
+                self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error inserting project: {e}")
 
@@ -99,8 +100,8 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
             sql = """
                 SELECT id, filename, path, folder_path, title, updated_at 
                 FROM projects
-                ORDER BY updated_at DESC
                 WHERE id = ?
+                ORDER BY updated_at DESC
             """
             self.cursor.execute(sql, (id,))
             row = self.cursor.fetchone()
@@ -132,7 +133,7 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
         except sqlite3.Error as e:
             print(f"Error updating project: {e}")
             
-    def update_records(self, records: list[ProjectModel]):
+    def update_records(self, records: list[ProjectModel], no_commit=False):
         """Update project's information."""
         try:
             sql = """
@@ -143,8 +144,9 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
             self.cursor.executemany(
                 sql, [(file.filename, file.updated_at or datetime.now(), file.path) for file in records]
             )
-            self.connection.commit()
-            self.data_updated.emit()
+            if no_commit == False:
+                self.connection.commit()
+                self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error updating project: {e}")
 
@@ -157,6 +159,10 @@ class ProjectDBController(AbstractDBController[ProjectModel]):
             self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error deleting project: {e}")
+            
+    def commit(self):
+        self.connection.commit()
+        self.data_updated.emit()
 
     def close_connection(self):
         """Close the database connection."""

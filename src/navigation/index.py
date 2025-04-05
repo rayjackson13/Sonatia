@@ -66,3 +66,8 @@ class Navigation(QObject):
     @property
     def can_go_back(self) -> bool:
         return len(self.__history) > 1
+    
+    @property
+    def uri(self) -> str | None:
+        route = self.__history[0]
+        return route[0]

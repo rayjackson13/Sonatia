@@ -1,11 +1,10 @@
 from PySide6.QtCore import Signal, QObject
-from models.project import ProjectModel
 
 
 class ProjectStore(QObject):
     _instance = None
 
-    data_updated = Signal(ProjectModel)
+    data_updated = Signal(int)
 
     @staticmethod
     def get_instance():
@@ -19,11 +18,11 @@ class ProjectStore(QObject):
             raise Exception("This class is a singleton!")
 
         super().__init__()
-        self.__project = None
+        self.__project_id = None
 
-    def set_project(self, project: ProjectModel) -> None:
-        self.__project = project
-        self.data_updated.emit(project)
+    def set_project_id(self, project_id: int | None) -> None:
+        self.__project_id = project_id
+        self.data_updated.emit(project_id)
 
-    def get_project(self) -> ProjectModel | None:
-        return self.__project
+    def get_project_id(self) -> int | None:
+        return self.__project_id

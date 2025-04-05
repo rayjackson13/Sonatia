@@ -48,6 +48,11 @@ class AbstractDBController(QObject, Generic[T]):
     def delete_record(self, record_id: int) -> None:
         """Abstract method to delete a record by its ID."""
         pass
+    
+    @abstractmethod
+    def commit(self) -> None:
+        """Abstract method to commit changes to DB."""
+        pass
 
     @abstractmethod
     def close_connection(self) -> None:

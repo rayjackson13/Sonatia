@@ -102,6 +102,10 @@ class FolderDBController(AbstractDBController[FolderModel]):
             self.data_updated.emit()
         except sqlite3.Error as e:
             print(f"Error deleting folder: {e}")
+            
+    def commit(self):
+        self.connection.commit()
+        self.data_updated.emit()
 
     def close_connection(self):
         """Close the database connection."""

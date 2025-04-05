@@ -3,8 +3,8 @@ from pathlib import Path
 from datetime import datetime
 
 from db.manager import DatabaseManager, DBNames
-from db.folders import FolderModel
-from db.projects import ProjectModel
+from db.folders import FolderModel, FolderDBController
+from db.projects import ProjectModel, ProjectDBController
 
 
 def get_folders() -> list[FolderModel]:
@@ -41,27 +41,34 @@ def get_files_in_folder(folder: FolderModel):
 
 
 def index_files() -> None:
+    # DB Controllers are called directly because
+    # this function may run on a separate thread.
     projects: list[ProjectModel] = []
-    folders = get_folders()
+
+    folders_db = FolderDBController()
+    folders = folders_db.fetch_all()
+    folders_db.close_connection()
 
     for folder in folders:
         projects.extend(get_files_in_folder(folder))
 
-    controller = DatabaseManager.get_controller(DBNames.Projects)
-    controller.insert_records(projects)
-    controller.update_records(projects)
+    projects_db = ProjectDBController()
+    projects_db.insert_records(projects, no_commit=True)
+    projects_db.update_records(projects, no_commit=True)
+    projects_db.commit()
+    projects_db.close_connection()
+
 
 def list_files() -> list[ProjectModel]:
     folders = get_folders()
     controller = DatabaseManager.get_controller(DBNames.Projects)
     folder_paths = [f'"{folder.path}"' for folder in folders]
-    folder_paths_str = ','.join(folder_paths)
+    folder_paths_str = ",".join(folder_paths)
     return controller.fetch_all(f"folder_path in ({folder_paths_str})")
-    
+
 
 def open_file(file_path: str) -> None:
     try:
         os.startfile(file_path)
     except FileNotFoundError as e:
         print(f"Could not open file at {file_path}: {e}")
-        
