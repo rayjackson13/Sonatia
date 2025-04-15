@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QCursor
 
+
 def center_window(window):
     # Get the screen geometry
     screen = QApplication.screenAt(QCursor.pos())

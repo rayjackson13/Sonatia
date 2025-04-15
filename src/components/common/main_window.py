@@ -15,8 +15,8 @@ from utils.window import center_window
 class MainWindow(FramelessWindow):
     def __init__(self):
         super().__init__()
-        self.resize(1200, 860)  # Set window dimensions
         self.setMinimumWidth(1200)
+        self.setMinimumHeight(900)
         self.navigation = Navigation(stack_parent=self)
         self.init_nav()
 
