@@ -41,9 +41,10 @@ edit_style = f"""
     }}
 """
 
+
 class EditableLabel(QWidget):
     text_changed = Signal(str)
-    
+
     def __init__(self, initial_text):
         super().__init__()
         self.text = initial_text

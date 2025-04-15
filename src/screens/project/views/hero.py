@@ -11,20 +11,6 @@ from navigation.index import Navigation
 from utils.files import open_file
 from utils.projects import get_project_title
 
-title_style = f"""
-    QLineEdit#HeroSectionTitle {{
-        border: 0;
-        color: {Colors.WHITE};
-        font-size: 24px;
-        line-height: 40px;
-        font-weight: 600;
-    }}
-    
-    QLineEdit#HeroSectionTitle:hover {{
-        border-bottom: 1px solid {Colors.WHITE};
-    }}
-"""
-
 button_style = f"""
     QPushButton#HeroSectionButton {{
         color: {Colors.SELECTED};
@@ -45,7 +31,7 @@ class HeroSection(GradientImageWidget):
         self.setMinimumHeight(350)
 
         layout = QHBoxLayout()
-        layout.setContentsMargins(48, 48, 48, 32)
+        layout.setContentsMargins(36, 48, 48, 32)
         layout.setSpacing(0)
         layout.setAlignment(Qt.AlignBottom | Qt.AlignLeft)
 
