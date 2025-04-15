@@ -7,6 +7,8 @@ from constants.colors import Colors
 title_style = f"""
     QLabel#EditableLabelText {{
         border: 0;
+        border-bottom: 2px dashed transparent;
+        padding: 4px 0;
         color: {Colors.WHITE};
         font-size: 24px;
         line-height: 40px;
@@ -16,7 +18,9 @@ title_style = f"""
 
 title_style_hovered = f"""
     QLabel#EditableLabelText {{
-        border-bottom: 1px dashed {Colors.WHITE};
+        border: 0;
+        border-bottom: 2px dashed {Colors.BG_PRIMARY};
+        padding: 4px 0;
         color: {Colors.WHITE};
         font-size: 24px;
         line-height: 40px;
@@ -26,6 +30,7 @@ title_style_hovered = f"""
 
 edit_style = f"""
     QLineEdit {{
+        padding: 0 4px;
         border: 0;
         color: {Colors.WHITE};
         font-size: 24px;
@@ -45,7 +50,7 @@ class EditableLabel(QWidget):
         self.is_editing = False  # Global flag to track editing mode
         layout = QVBoxLayout(self)
         self.setLayout(layout)
-        self.setFixedHeight(40)
+        self.setFixedHeight(48)
 
         # Create the QLabel
         self.label = QLabel(self.text)

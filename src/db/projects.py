@@ -7,7 +7,7 @@ from models.project import ProjectModel
 
 from .controller import AbstractDBController
 
-DB_PATH = "db/projects.db"
+DB_PATH = "db/main.db"
 
 
 class ProjectDBController(AbstractDBController[ProjectModel]):

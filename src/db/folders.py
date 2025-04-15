@@ -6,7 +6,7 @@ from models.folder import FolderModel
 
 from .controller import AbstractDBController
 
-DB_PATH = "db/folders.db"
+DB_PATH = "db/main.db"
 
 
 class FolderDBController(AbstractDBController[FolderModel]):

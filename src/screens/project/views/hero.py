@@ -19,6 +19,10 @@ title_style = f"""
         line-height: 40px;
         font-weight: 600;
     }}
+    
+    QLineEdit#HeroSectionTitle:hover {{
+        border-bottom: 1px solid {Colors.WHITE};
+    }}
 """
 
 button_style = f"""

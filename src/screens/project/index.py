@@ -3,17 +3,15 @@ from PySide6.QtCore import Qt
 
 from db.manager import DatabaseManager, DBNames
 from db.projects import ProjectModel
-from navigation.index import Navigation
 from store.project import ProjectStore
-from utils.projects import get_project_title
 
 from .views.hero import HeroSection
+from .views.main import MainGrid
 
 
 class ProjectScreen(QWidget):
     def __init__(self):
         super().__init__()
-        self.navigation = Navigation()
         self.store = ProjectStore.get_instance()
         self.db = DatabaseManager.get_controller(DBNames.Projects)
         self.store.data_updated.connect(self.on_data_updated)
@@ -42,17 +40,10 @@ class ProjectScreen(QWidget):
         self._layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         hero = HeroSection(project)
-        label = QLabel(get_project_title(project))
-        label.setObjectName("ProjectScreenTitle")
-        label.setStyleSheet("QLabel#ProjectScreenTitle { color: white; }")
-        button = QPushButton("Go Back")
-        button.setObjectName("SettingsScreenBack")
-        button.setStyleSheet("QPushButton#SettingsScreenBack { color: white; }")
-        button.clicked.connect(self.navigation.go_back)
+        grid = MainGrid(project)
 
         self._layout.addWidget(hero)
-        self._layout.addWidget(label)
-        self._layout.addWidget(button)
+        self._layout.addWidget(grid)
         
     def get_project(self) -> ProjectModel | None:
         project_id = self.store.get_project_id()
